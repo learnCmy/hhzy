@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhzy.crm.modules.customer.dao.OfferBuyMapper">
+  <resultMap id="BaseResultMap" type="com.hhzy.crm.modules.customer.entity.OfferBuy">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="project_id" jdbcType="BIGINT" property="projectId"/>
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="id_card" jdbcType="VARCHAR" property="idCard" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="offer_buy_time" jdbcType="TIMESTAMP" property="offerBuyTime" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="pre_price" jdbcType="DECIMAL" property="prePrice" />
+    <result column="house_id" jdbcType="BIGINT" property="houseId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="status" jdbcType="INTEGER" property="status" />
+    <result column="age" jdbcType="VARCHAR" property="age"/>
+    <result column="buy_motive" jdbcType="VARCHAR" property="buyMotive"/>
+    <result column="home_structure" jdbcType="VARCHAR" property="homeStructure"/>
+    <result column="source_way" jdbcType="INTEGER" property="sourceWay"/>
+    <result column="profession" jdbcType="VARCHAR" property="profession"/>
+  </resultMap>
+
+
+  <select id="selectByName" resultType="com.hhzy.crm.modules.customer.entity.OfferBuy">
+    select a.* from offer_buy a
+    where 1=1
+    <if test="projectId!=null">
+     and a.project_id=#{projectId}
+    </if>
+
+    <if test="userId!=null and userId!=''">
+     and a.user_id=#{userId}
+    </if>
+
+    <if test="keyWord!=null and keyWord!=''">
+      and (a.name like CONCAT('%', #{keyWord}, '%')
+        or a.mobile like CONCAT('%', #{keyWord}, '%')
+      )
+    </if>
+    order by a.offer_buy_time desc
+  </select>
+
+
+
+  <select id="selectList" resultType="com.hhzy.crm.modules.customer.entity.OfferBuy">
+    select a.*,b.username as user_name,c.name as house_name from offer_buy a left join  sys_user b on a.user_id=b.user_id
+    left join house c on a.house_id=c.id
+    where 1=1
+    <if test="offerBuyDTO.projectId!=null">
+      and a.project_id=#{offerBuyDTO.projectId}
+    </if>
+
+    <if test="offerBuyDTO.keyWord!=null and offerBuyDTO.keyWord!=''">
+      and (a.name like CONCAT('%', #{offerBuyDTO.keyWord}, '%')
+      or a.mobile like CONCAT('%', #{offerBuyDTO.keyWord}, '%')
+      or c.name like CONCAT('%', #{offerBuyDTO.keyWord}, '%')
+      )
+    </if>
+
+    <if test="offerBuyDTO.userId!=null and offerBuyDTO.userId!=''">
+      and a.user_id=#{offerBuyDTO.userId}
+    </if>
+
+    <if test="offerBuyDTO.status!=null">
+      and a.status=#{offerBuyDTO.status}
+    </if>
+
+    <if test="offerBuyDTO.offerStartTime!=null">
+      and a.offer_buy_time <![CDATA[ >= ]]> #{offerBuyDTO.offerStartTime}
+    </if>
+
+    <if test="offerBuyDTO.offerEndTime!=null">
+      and a.offer_buy_time <![CDATA[ <= ]]> #{offerBuyDTO.offerEndTime}
+    </if>
+    order by ${offerBuyDTO.sortClause} ${offerBuyDTO.sort}
+  </select>
+
+
+
+  <select id="selectTop10" resultType="com.hhzy.crm.modules.customer.dataobject.vo.Top10OfferBuyVo">
+  SELECT COUNT(1) num ,a.user_id,b.username,sum(c.sign_amount_price) amount_price FROM `offer_buy` a LEFT JOIN sys_user b ON a.user_id=b.user_id
+  left join sign_info c on a.id=c.offer_buy_id
+  where a.project_id=#{projectId} and a.status=1
+  GROUP BY a.user_id,b.username ORDER BY num DESC LIMIT 0,10
+  </select>
+
+
+  <select id="removeUserId" resultType="integer">
+    UPDATE offer_buy SET user_id=null WHERE
+    id in
+    <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </select>
+
+</mapper>

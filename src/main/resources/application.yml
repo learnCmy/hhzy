@@ -1,0 +1,36 @@
+server:
+    port: 9090
+    servlet:
+      context-path: /hhzy
+
+spring:
+  profiles:
+    active: dev
+
+mybatis:
+    mapper-locations: classpath:mapper/*.xml
+    configuration:
+      #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+      map-underscore-to-camel-case: true
+
+mapper:
+    mappers:
+        - com.hhzy.crm.common.base.MyMapper
+    not-empty: false
+    identity: MYSQL
+
+
+pagehelper:
+    helperDialect: mysql
+    reasonable: true
+    supportMethodsArguments: true
+    params: count=countSql
+
+restart:
+  include:
+    mapper: /mapper-[\\w-\\.]+jar
+restart:
+  include:
+    pagehelper: /pagehelper-[\\w-\\.]+jar
+
+

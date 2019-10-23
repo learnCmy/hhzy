@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hhzy.crm.modules.customer.dao.CallLogMapper" >
+  <resultMap id="BaseResultMap" type="com.hhzy.crm.modules.customer.entity.CallLog" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="call_time" property="callTime" jdbcType="TIMESTAMP" />
+    <result column="acquiring_way" property="acquiringWay" jdbcType="VARCHAR" />
+    <result column="ask_content_one" property="askContentOne" jdbcType="VARCHAR" />
+    <result column="ask_content_two" property="askContentTwo" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+    <result column="name" property="name" jdbcType="VARCHAR"/>
+    <result column="sex" property="sex" jdbcType="INTEGER"/>
+    <result column="project_id" property="projectId" jdbcType="BIGINT"/>
+  </resultMap>
+
+  <select id="list" resultType="com.hhzy.crm.modules.customer.entity.CallLog">
+    select a.*,b.username as user_name from call_log a  left join sys_user b on a.user_id=b.user_id where  1=1
+    <if test="callLogDTO.projectId!=null">
+      and a.project_id=#{callLogDTO.projectId}
+    </if>
+    <if test="callLogDTO.userId!=null">
+      and a.user_id=#{callLogDTO.userId}
+    </if>
+    <if test="callLogDTO.startCallTime!=null">
+      and a.call_time <![CDATA[ >= ]]> #{callLogDTO.startCallTime}
+    </if>
+    <if test="callLogDTO.endCallTime!=null">
+      and a.call_time <![CDATA[ <= ]]> #{callLogDTO.endCallTime}
+    </if>
+    <if test="callLogDTO.acquiringWay!=null and callLogDTO.acquiringWay!=''">
+      and a.acquiring_way like CONCAT('%', #{callLogDTO.acquiringWay}, '%')
+    </if>
+    <if test="callLogDTO.askContent!=null and callLogDTO.askContent!=''">
+      and (a.ask_content_one like CONCAT('%', #{callLogDTO.askContent}, '%')
+        or  a.ask_content_two like CONCAT('%', #{callLogDTO.askContent}, '%')
+      )
+    </if>
+    <if test="callLogDTO.keyWord!=null and callLogDTO.keyWord!=''">
+      and (a.mobile like CONCAT('%', #{callLogDTO.keyWord}, '%') or
+         a.name like CONCAT('%', #{callLogDTO.keyWord}, '%')
+      )
+    </if>
+    order by ${callLogDTO.sortClause} ${callLogDTO.sort}
+  </select>
+
+
+  <select id="removeUserId" resultType="integer">
+    UPDATE call_log SET user_id=null WHERE
+    id in
+    <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </select>
+
+</mapper>

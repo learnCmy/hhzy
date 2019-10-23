@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hhzy.crm.modules.customer.dao.SignInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.hhzy.crm.modules.customer.entity.SignInfo" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="house_id" property="houseId" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT"/>
+    <result column="sign_time" property="signTime" jdbcType="TIMESTAMP" />
+    <result column="sign_amount_price" property="signAmountPrice" jdbcType="DECIMAL" />
+    <result column="sign_acreage_price" property="signAcreagePrice" jdbcType="DECIMAL" />
+    <result column="pay_way" property="payWay" jdbcType="VARCHAR" />
+    <result column="first_pay_price" property="firstPayPrice" jdbcType="DECIMAL" />
+    <result column="loans_price" property="loansPrice" jdbcType="DECIMAL" />
+    <result column="is_submit" property="isSubmit" jdbcType="TINYINT" />
+    <result column="is_net_sign" property="isNetSign" jdbcType="TINYINT" />
+    <result column="contract_no" property="contractNo" jdbcType="VARCHAR" />
+    <result column="record_no" property="recordNo" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="offer_buy_id" property="offerBuyId" jdbcType="BIGINT" />
+    <result column="project_id" property="projectId" jdbcType="BIGINT"/>
+      <result column="delivery_time" property="deliveryTime" jdbcType="TIMESTAMP"/>
+      <result column="commission" property="commission" jdbcType="TINYINT"/>
+      <result column="clear_info" property="clearInfo" jdbcType="VARCHAR"/>
+      <result column="loan_time" property="loanTime" jdbcType="TIMESTAMP"/>
+      <result column="bank_category" property="bankCategory" jdbcType="VARCHAR"/>
+      <result column="is_record" property="isRecord" jdbcType="TINYINT"/>
+      <result column="business_no" property="businessNo" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <select id="selectList" resultType="com.hhzy.crm.modules.customer.entity.SignInfo">
+     select a.* from sign_info a where 1=1
+     <if test="signDTO.projectId!=null ">
+     and a.project_id=#{signDTO.projectId}
+    </if>
+    <if test="signDTO.contractNo!=null">
+      and a.contract_no=#{signDTO.contractNo}
+    </if>
+
+    <if test="signDTO.signStartTime!=null">
+      and a.sign_time <![CDATA[ >= ]]> #{signDTO.signStartTime}
+    </if>
+
+    <if test="signDTO.signEndTime!=null">
+      and a.sign_time <![CDATA[ <= ]]> #{signDTO.signEndTime}
+    </if>
+    order by a.create_time desc
+  </select>
+
+    <select id="selectSignVo" resultType="com.hhzy.crm.modules.customer.dataobject.vo.SignVo"
+            parameterType="com.hhzy.crm.modules.customer.dataobject.dto.SignDTO">
+        SELECT
+            a.*,b.house_id,c.name as house_name,c.house_info,c.acreage,c.acreage_price,c.amount_price,c.status as house_status,c.info as house_describe,
+            c.type as houseType,c.room_no,c.floor_level,b.name,b.sex,b.mobile,b.id_card,b.address,b.offer_buy_time,b.user_id,b.pre_price,b.house_id,
+            b.work_address,b.profession,b.age,b.home_structure,b.buy_motive,b.source_way,d.username as user_name
+        FROM
+            sign_info a
+            LEFT JOIN offer_buy b ON b.id = a.offer_buy_id
+            LEFT JOIN house c ON a.house_id = c.id
+            left join  sys_user d on b.user_id=d.user_id
+        WHERE
+            b.`status` = 1
+        <if test="contractNo!=null and contractNo!=''">
+            and a.contract_no like  CONCAT('%', #{contractNo}, '%')
+        </if>
+      <if test="mobile!=null and mobile!=''">
+         and b.mobile like CONCAT('%', #{mobile}, '%')
+      </if>
+        <if test="name!=null and name!=''">
+           and b.name like CONCAT('%', #{name}, '%')
+        </if>
+        <if test="keyWord!=null and keyWord!=''">
+            and (b.name like CONCAT('%', #{keyWord}, '%')
+            or b.mobile like CONCAT('%', #{keyWord}, '%')
+            or c.name like CONCAT('%', #{keyWord}, '%')
+            )
+        </if>
+        <if test="userId!=null">
+           and d.user_id=#{userId}
+        </if>
+        <if test="houseId!=null">
+         and c.id=#{houseId}
+        </if>
+        <if test="houseType!=null">
+         and  c.type=#{houseType}
+        </if>
+        <choose>
+            <when test="dateType=='sign'">
+                <if test="startTime!=null">
+                    and a.sign_time <![CDATA[ >= ]]> #{startTime}
+                </if>
+                <if test="endTime!=null">
+                    and a.sign_time <![CDATA[ <= ]]> #{endTime}
+                </if>
+            </when>
+            <when test="dateType=='offer'">
+                <if test="startTime!=null">
+                    and b.offer_buy_time <![CDATA[ >= ]]>  #{startTime}
+                </if>
+                <if test="endTime!=null">
+                    and b.offer_buy_time <![CDATA[ <= ]]> #{endTime}
+                </if>
+            </when>
+            <when test="dateType=='loan'">
+                <if test="startTime!=null">
+                    and a.loan_time <![CDATA[ >= ]]> #{startTime}
+                </if>
+                <if test="endTime!=null">
+                    and a.loan_time <![CDATA[ <= ]]> #{endTime}
+                </if>
+            </when>
+            <otherwise>
+                <if test="startTime!=null">
+                    and a.create_time <![CDATA[ >= ]]> #{startTime}
+                </if>
+                <if test="endTime!=null">
+                    and a.create_time <![CDATA[ <= ]]> #{endTime}
+                </if>
+            </otherwise>
+        </choose>
+        order by ${sortClause} ${sort}
+    </select>
+
+    <select id="sellAmountCount" resultType="java.math.BigDecimal">
+         SELECT SUM(sign_amount_price) FROM `sign_info`
+         where 1=1
+         and project_id=#{projectId}
+        <if test="startTime!=null">
+            and create_time <![CDATA[ >= ]]> #{startTime}
+        </if>
+        <if test="endTime!=null">
+            and create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+    </select>
+
+</mapper>

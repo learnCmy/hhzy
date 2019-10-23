@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hhzy.crm.modules.customer.dao.FollowLogMapper" >
+  <resultMap id="BaseResultMap" type="com.hhzy.crm.modules.customer.entity.FollowLog" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="contact_Way" property="contactWay" jdbcType="VARCHAR" />
+    <result column="subject" property="subject" jdbcType="VARCHAR" />
+    <result column="contact_detail" property="contactDetail" jdbcType="VARCHAR" />
+    <result column="next_visit_time" property="nextVisitTime" jdbcType="TIMESTAMP" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR"></result>
+    <result column="name" property="name" jdbcType="VARCHAR"></result>
+    <result column="project_id" property="projectId" jdbcType="BIGINT"></result>
+  </resultMap>
+  
+  <select id="selcetByKeyWord" resultType="com.hhzy.crm.modules.customer.entity.FollowLog">
+    select a.* from follow_log a
+    where 1=1
+    <if test="userId!=null and userId!=''">
+     and a.user_id=#{userId}
+    </if>
+    <if test="projectId!=null">
+     and a.project_id=#{projectId}
+    </if>
+    <if test="keyWord!=null and keyWord!=''">
+      and (a.name like CONCAT('%', #{keyWord}, '%') or a.mobile like CONCAT('%', #{keyWord}, '%') )
+    </if>
+    order by a.next_visit_time desc
+  </select>
+
+
+  <select id="selectFollowLog" resultType="com.hhzy.crm.modules.customer.entity.FollowLog">
+    select a.*,b.username as user_name from follow_log a left join sys_user b on a.user_id=b.user_id
+    <where>
+      <if test="followLogDTO.projectId!=null">
+        and a.project_id=#{followLogDTO.projectId}
+      </if>
+      <if test="followLogDTO.userId!=null and followLogDTO.userId!=''">
+        and a.user_id=#{followLogDTO.userId}
+      </if>
+      <if test="followLogDTO.keyWord!=null">
+        and (a.name like CONCAT('%', #{followLogDTO.keyWord}, '%') or
+        a.mobile like CONCAT('%', #{followLogDTO.keyWord}, '%')
+        )
+      </if>
+      <if test="followLogDTO.startTime!=null">
+        and a.create_time <![CDATA[ >= ]]> #{followLogDTO.startTime}
+      </if>
+      <if test="followLogDTO.endTime!=null">
+        and a.create_time <![CDATA[ <= ]]> #{followLogDTO.endTime}
+      </if>
+      <if test="followLogDTO.nextStartTime!=null">
+        and a.next_visit_time <![CDATA[ >= ]]> #{followLogDTO.nextStartTime}
+      </if>
+      <if test="followLogDTO.nextEndTime!=null">
+        and a.next_visit_time <![CDATA[ <= ]]> #{followLogDTO.nextEndTime}
+      </if>
+    </where>
+    order by ${followLogDTO.sortClause} ${followLogDTO.sort}
+  </select>
+
+  <select id="removeUserId" resultType="integer">
+    UPDATE follow_log SET user_id=null WHERE
+    id in
+    <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </select>
+</mapper>

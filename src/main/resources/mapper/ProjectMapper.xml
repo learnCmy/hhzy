@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhzy.crm.modules.customer.dao.ProjectMapper">
+  <resultMap id="BaseResultMap" type="com.hhzy.crm.modules.customer.entity.Project">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="project_name" jdbcType="VARCHAR" property="projectName" />
+    <result column="live_address_config" jdbcType="VARCHAR" property="liveAddressConfig" />
+    <result column="work_address_config" jdbcType="VARCHAR" property="workAddressConfig" />
+  </resultMap>
+
+</mapper>

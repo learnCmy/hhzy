@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hhzy.crm.modules.customer.dao.IdentifyLogMapper" >
+  <resultMap id="BaseResultMap" type="com.hhzy.crm.modules.customer.entity.IdentifyLog" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="identify_price" property="identifyPrice" jdbcType="DECIMAL" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+    <result column="id_address" property="idAddress" jdbcType="VARCHAR"/>
+    <result column="company" property="company" jdbcType="VARCHAR"/>
+    <result column="company_address" property="companyAddress" jdbcType="VARCHAR"/>
+    <result column="mobile" property="mobile" jdbcType="VARCHAR"/>
+    <result column="name" property="name" jdbcType="VARCHAR"/>
+    <result column="project_id" property="projectId" jdbcType="BIGINT"/>
+    <result column="remark" property="remark" jdbcType="VARCHAR"/>
+    <result column="sell_status" property="sellStatus" jdbcType="INTEGER"/>
+    <result column="refund_time" property="refundTime" jdbcType="TIMESTAMP"/>
+    <result column="identify_time" property="identifyTime" jdbcType="TIMESTAMP"/>
+    <result column="profession" property="profession" jdbcType="VARCHAR"/>
+    <result column="product_requirement" property="productRequirement" jdbcType="VARCHAR"/>
+    <result column="purpose" property="purpose" jdbcType="VARCHAR"/>
+    <result column="source_way" property="sourceWay" jdbcType="INTEGER"/>
+    <result column="buy_motive" property="buyMotive" jdbcType="VARCHAR"/>
+    <result column="age" property="age" jdbcType="VARCHAR"/>
+    <result column="vip_card" property="vipCard" jdbcType="VARCHAR"/>
+    <result column="purpose_price" property="purposePrice" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <select id="selcetByKeyWord" resultType="com.hhzy.crm.modules.customer.entity.IdentifyLog">
+    select a.* from identify_log a
+    where 1=1
+    <if test="projectId!=null">
+      and a.project_id=#{projectId}
+    </if>
+    <if test="userId!=null and userId!=''">
+      and a.user_id=#{userId}
+    </if>
+    <if test="keyWord!=null and keyWord!=''">
+      and a.name like CONCAT('%', #{keyWord}, '%')
+    </if>
+
+    order by a.create_time desc
+  </select>
+
+
+  <select id="selectList" resultType="com.hhzy.crm.modules.customer.entity.IdentifyLog">
+    select a.*,b.username as user_name from identify_log a  left join  sys_user b on a.user_id=b.user_id
+    where 1=1
+    <if test="identifyDTO.projectId!=null">
+      and a.project_id=#{identifyDTO.projectId}
+    </if>
+    <if test="identifyDTO.keyWord!=null and identifyDTO.keyWord!=''">
+      and (a.name like CONCAT('%', #{identifyDTO.keyWord}, '%') or
+      a.mobile like CONCAT('%', #{identifyDTO.keyWord}, '%')
+      )
+    </if>
+    <if test="identifyDTO.userId!=null">
+      and a.user_id=#{identifyDTO.userId}
+    </if>
+    <if test="identifyDTO.vipCard!=null and identifyDTO.vipCard!=''">
+      and a.vip_card=#{identifyDTO.vipCard}
+    </if>
+
+    <if test="identifyDTO.startTime!=null">
+      and a.create_time <![CDATA[ >= ]]> #{identifyDTO.startTime}
+    </if>
+
+    <if test="identifyDTO.endTime!=null">
+      and a.create_time <![CDATA[ <= ]]> #{identifyDTO.endTime}
+    </if>
+
+    order by ${identifyDTO.sortClause} ${identifyDTO.sort}
+
+  </select>
+
+
+
+  <select id="removeUserId" resultType="integer">
+    UPDATE identify_log SET user_id=null WHERE
+    id in
+    <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </select>
+
+</mapper>

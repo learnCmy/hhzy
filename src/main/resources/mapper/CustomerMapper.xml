@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhzy.crm.modules.customer.dao.CustomerMapper">
+  <resultMap id="BaseResultMap" type="com.hhzy.crm.modules.customer.entity.Customer">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="sex" jdbcType="INTEGER" property="sex" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="coming_time" jdbcType="TIMESTAMP" property="comingTime" />
+    <result column="age" jdbcType="VARCHAR" property="age" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="profession" jdbcType="VARCHAR" property="profession" />
+    <result column="home_structure" jdbcType="VARCHAR" property="homeStructure" />
+    <result column="source_way" jdbcType="INTEGER" property="sourceWay" />
+    <result column="product_requirement" jdbcType="VARCHAR" property="productRequirement" />
+    <result column="acreage_requirement" jdbcType="VARCHAR" property="acreageRequirement" />
+    <result column="purpose_floor" jdbcType="VARCHAR" property="purposeFloor" />
+    <result column="purpose_price" jdbcType="VARCHAR" property="purposePrice" />
+    <result column="purpose" jdbcType="VARCHAR" property="purpose" />
+    <result column="pay_way" jdbcType="VARCHAR" property="payWay" />
+    <result column="focus_point" jdbcType="VARCHAR" property="focusPoint" />
+    <result column="resist_point" jdbcType="VARCHAR" property="resistPoint" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="project_id" property="projectId" jdbcType="BIGINT"/>
+  </resultMap>
+
+  
+  <select id="selctList" resultType="com.hhzy.crm.modules.customer.entity.Customer">
+    select a.*,b.username  as user_name from customer a  left join  sys_user b on a.user_id=b.user_id where 1=1
+
+    <if test="customerDTO.projectId!=null and customerDTO.projectId!='' ">
+      and a.project_id=#{customerDTO.projectId}
+    </if>
+
+    <if test="customerDTO.keyWord!=null and customerDTO.keyWord!=''">
+      and ( a.name like CONCAT('%', #{customerDTO.keyWord}, '%')
+        or  a.mobile like CONCAT('%', #{customerDTO.keyWord}, '%')
+        )
+    </if>
+
+    <if test="customerDTO.userId!=null">
+      and a.user_id = #{customerDTO.userId}
+    </if>
+
+    <if test="customerDTO.startComingTime!=null">
+      and a.coming_time <![CDATA[ >= ]]> #{customerDTO.startComingTime}
+    </if>
+
+    <if test="customerDTO.endComingTime!=null">
+      and a.coming_time <![CDATA[ <= ]]> #{customerDTO.endComingTime}
+    </if>
+
+    order by ${customerDTO.sortClause} ${customerDTO.sort}
+
+  </select>
+
+
+  <select id="selectTop10Cusomter" resultType="com.hhzy.crm.modules.customer.dataobject.vo.Top10CusomterVO">
+  SELECT COUNT(1) num ,a.user_id,b.username FROM `customer` a LEFT JOIN sys_user b ON a.user_id=b.user_id
+  where a.project_id=#{projectId} and b.username is not null
+  GROUP BY a.user_id,b.username ORDER BY num DESC LIMIT 0,10
+  </select>
+
+
+  <select id="removeUserId" resultType="integer">
+    UPDATE customer SET user_id=null WHERE
+    id in 
+    <foreach collection="customerIds" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </select>
+
+</mapper>
