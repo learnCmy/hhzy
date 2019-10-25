@@ -10,30 +10,26 @@ import com.hhzy.crm.common.exception.BusinessException;
 import com.hhzy.crm.common.utils.DateUtils;
 import com.hhzy.crm.common.utils.EnumUtil;
 import com.hhzy.crm.modules.customer.dao.CustomerMapper;
-import com.hhzy.crm.modules.customer.dao.IdentifyLogMapper;
 import com.hhzy.crm.modules.customer.dataobject.dto.CustomerDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.UserBatchDTO;
 import com.hhzy.crm.modules.customer.dataobject.importPOI.CustomerImport;
 import com.hhzy.crm.modules.customer.entity.Customer;
-import com.hhzy.crm.modules.customer.entity.FollowLog;
 import com.hhzy.crm.modules.customer.service.CustomerService;
 import com.hhzy.crm.modules.customer.service.FollowLogService;
 import com.hhzy.crm.modules.sys.dao.SysUserDao;
 import com.hhzy.crm.modules.sys.entity.SysUser;
 import com.hhzy.crm.modules.sys.service.SysUserService;
-import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
-import javax.validation.constraints.NotBlank;
-import java.sql.Ref;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: cmy
@@ -66,13 +62,8 @@ public class CustomerServiceImpl extends BaseServiceImpl<Customer> implements Cu
                                 .andEqualTo("projectId",customer.getProjectId());
         List<Customer> customers = customerMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(customers)){
-            String username="";
-            Long userId = customers.get(0).getUserId();
-            SysUser sysUser = sysUserDao.selectByPrimaryKey(userId);
-            if (sysUser!=null){
-                username = sysUser.getUsername();
-            }
-            throw new BusinessException("【手机号已存在】该客户信息已被【"+username+"】录入");
+            String userName = sysUserService.getUserName(customers.get(0).getUserId());
+            throw new BusinessException("【手机号已存在】该客户信息已被【"+userName+"】录入");
         }
         this.saveSelective(customer);
     }
@@ -88,7 +79,8 @@ public class CustomerServiceImpl extends BaseServiceImpl<Customer> implements Cu
                                  .andNotEqualTo("id",customer.getId());
         List<Customer> customers = customerMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(customers)){
-            throw new BusinessException("【手机号已存在】该客户信息已经被录入");
+            String userName = sysUserService.getUserName(customers.get(0).getUserId());
+            throw new BusinessException("【手机号已存在】该客户信息已被【"+userName+"】录入");
         }
         this.updateSelective(customer);
     }
@@ -241,4 +233,6 @@ public class CustomerServiceImpl extends BaseServiceImpl<Customer> implements Cu
     public void removeUserId(List<Long> customerIdList) {
         customerMapper.removeUserId(customerIdList);
     }
+
+
 }

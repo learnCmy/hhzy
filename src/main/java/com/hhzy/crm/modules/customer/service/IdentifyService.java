@@ -40,10 +40,11 @@ public interface IdentifyService extends BaseService<IdentifyLog> {
 
     void updateSellStatus(Long id, Integer sellStatus);
 
-    IdentifyLog selectByMobile(Long projectId,String mobile);
+    List<IdentifyLog> selectByMobile(Long projectId,String mobile);
 
     Map<String,Object> importDatas(List<IdentifyImport> list, Long projectId);
 
     void updateByPrimaryKeySelective(IdentifyLog identifyLog);
+
 
 }

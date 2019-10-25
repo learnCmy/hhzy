@@ -34,4 +34,6 @@ public interface CallLogService {
      */
 
     void removeUserId(List<Long> callIdList);
+
+    List<CallLog> selectByMobile(Long projectId,String mobile);
 }

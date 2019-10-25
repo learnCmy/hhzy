@@ -48,4 +48,6 @@ public interface SysUserService {
 
     void  updatePassword(Long userId,String passwrod);
 
+    String getUserName(Long userId);
+
 }

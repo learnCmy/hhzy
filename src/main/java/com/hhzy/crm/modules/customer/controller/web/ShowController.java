@@ -2,7 +2,7 @@ package com.hhzy.crm.modules.customer.controller.web;
 
 import com.hhzy.crm.common.response.CommonResult;
 import com.hhzy.crm.modules.customer.dataobject.dto.ShowDTO;
-import com.hhzy.crm.modules.customer.dataobject.vo.Top10CusomterVO;
+import com.hhzy.crm.modules.customer.dataobject.vo.Top10VO;
 import com.hhzy.crm.modules.customer.dataobject.vo.Top10OfferBuyVo;
 import com.hhzy.crm.modules.customer.service.ShowService;
 import io.swagger.annotations.Api;
@@ -50,8 +50,8 @@ public class ShowController {
     @PostMapping("/top/customer")
     @ApiOperation("前10的来访客户数的置业顾问")
     public CommonResult top10Customer(Long projectId){
-        List<Top10CusomterVO> top10CusomterVOS = showService.listTop10Customer(projectId);
-        return CommonResult.success(top10CusomterVOS);
+        List<Top10VO> top10VOS = showService.listTop10Customer(projectId);
+        return CommonResult.success(top10VOS);
     }
 
     @PostMapping("/top/offer")
@@ -59,6 +59,13 @@ public class ShowController {
     public CommonResult top10OfferBuyCustomer(Long projectId){
         List<Top10OfferBuyVo> top10OfferBuyVos = showService.listTop10OfferBuy(projectId);
         return CommonResult.success(top10OfferBuyVos);
+    }
+
+    @PostMapping("/top/tookeen")
+    @ApiOperation("前10拓客数的置业顾问")
+    public CommonResult top10Tookeen(Long projectId){
+        List<Top10VO> top10VOS = showService.listTop10Tookeen(projectId);
+        return CommonResult.success(top10VOS);
     }
 
     @PostMapping("/line/chart")

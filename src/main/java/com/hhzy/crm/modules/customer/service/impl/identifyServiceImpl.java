@@ -131,15 +131,11 @@ public class identifyServiceImpl extends BaseServiceImpl<IdentifyLog> implements
     }
 
     @Override
-    public IdentifyLog selectByMobile(Long projectId,String mobile){
+    public List<IdentifyLog> selectByMobile(Long projectId,String mobile){
         Example example = new Example(IdentifyLog.class);
         example.createCriteria().andEqualTo("mobile",mobile).andEqualTo("projectId",projectId);
         List<IdentifyLog> identifyLogs = identifyLogMapper.selectByExample(example);
-        if (CollectionUtils.isNotEmpty(identifyLogs)){
-            return identifyLogs.get(0);
-        }else {
-            return null;
-        }
+        return identifyLogs;
     }
 
     public Map<String,Object> importDatas(List<IdentifyImport> list,Long projectId){

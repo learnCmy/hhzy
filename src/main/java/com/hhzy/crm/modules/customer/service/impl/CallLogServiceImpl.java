@@ -10,6 +10,7 @@ import com.hhzy.crm.modules.customer.entity.CallLog;
 import com.hhzy.crm.modules.customer.entity.Customer;
 import com.hhzy.crm.modules.customer.service.CallLogService;
 import com.hhzy.crm.modules.customer.service.CustomerService;
+import com.hhzy.crm.modules.sys.service.SysUserService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,8 @@ public class CallLogServiceImpl implements CallLogService {
     @Autowired
     private CustomerService customerService;
 
+    @Autowired
+    private SysUserService sysUserService;
 
     public void saveCallLog(CallLog callLog){
         saveCheck(callLog.getMobile(),callLog.getProjectId(),null);
@@ -57,7 +60,8 @@ public class CallLogServiceImpl implements CallLogService {
     private void saveCheck(String mobile,Long projectId,Long callLogId){
         List<Customer> list = customerService.selectCustomerByMobile(mobile,projectId);
         if (CollectionUtils.isNotEmpty(list)){
-            throw new BusinessException("该客户信息已经存在【已来访过】");
+            String userName = sysUserService.getUserName(list.get(0).getUserId());
+            throw new BusinessException("【已有来访记录】该客户信息已被【"+userName+"】录入");
         }
         Example example = new Example(CallLog.class);
         Example.Criteria criteria = example.createCriteria().andEqualTo("mobile", mobile)
@@ -67,7 +71,8 @@ public class CallLogServiceImpl implements CallLogService {
         }
         List<CallLog> callLogs = callLogMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(callLogs)){
-            throw  new BusinessException("该客户信息已经存在【已来电过】");
+            String userName = sysUserService.getUserName(list.get(0).getUserId());
+            throw  new BusinessException("【已有来电记录】该客户信息已被【"+userName+"】录入");
         }
     }
 
@@ -124,6 +129,15 @@ public class CallLogServiceImpl implements CallLogService {
     @Override
     public void removeUserId(List<Long> callIdList) {
         callLogMapper.removeUserId(callIdList);
+    }
+
+    @Override
+    public List<CallLog> selectByMobile(Long projectId, String mobile) {
+        Example example = new Example(CallLog.class);
+        example.createCriteria().andEqualTo("mobile",mobile)
+                                .andEqualTo("projectId",projectId);
+        List<CallLog> callLogs = callLogMapper.selectByExample(example);
+        return callLogs;
     }
 
 }

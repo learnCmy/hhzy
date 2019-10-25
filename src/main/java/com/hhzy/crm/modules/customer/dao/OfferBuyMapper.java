@@ -24,4 +24,6 @@ public interface OfferBuyMapper extends MyMapper<OfferBuy> {
      */
 
     Integer removeUserId(@Param("ids") List<Long> ids);
+
+    int countNumberByStatus(@Param("projectId") Long projectId,@Param("status") Integer status);
 }

@@ -2,12 +2,11 @@ package com.hhzy.crm.modules.customer.service.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import com.hhzy.crm.common.utils.DateUtils;
 import com.hhzy.crm.modules.customer.dao.*;
 import com.hhzy.crm.modules.customer.dataobject.dto.ShowDTO;
 import com.hhzy.crm.modules.customer.dataobject.vo.LineChartData;
-import com.hhzy.crm.modules.customer.dataobject.vo.Top10CusomterVO;
+import com.hhzy.crm.modules.customer.dataobject.vo.Top10VO;
 import com.hhzy.crm.modules.customer.dataobject.vo.Top10OfferBuyVo;
 import com.hhzy.crm.modules.customer.entity.*;
 import com.hhzy.crm.modules.customer.service.ShowService;
@@ -42,6 +41,12 @@ public class ShowServiceImpl implements ShowService {
 
     @Autowired
     private OfferBuyMapper offerBuyMapper;
+
+    @Autowired
+    private TookeenMapper tookeenMapper;
+
+    @Autowired
+    private IdentifyLogMapper identifyLogMapper;
 
     @Override
     public Map<String,Object> count(ShowDTO showDTO){
@@ -100,6 +105,28 @@ public class ShowServiceImpl implements ShowService {
         }
         int offerCount = offerBuyMapper.selectCountByExample(offerExample);
         map.put("offer",offerCount);
+
+
+
+        //统计拓展客户
+        Example tookeenExample = new Example(Tookeen.class);
+        Example.Criteria tookeenCriteria = tookeenExample.createCriteria().andEqualTo("projectId", projectId);
+        if (beginDate!=null&&endDate!=null){
+            tookeenCriteria.andBetween("createTime",beginDate,endDate);
+        }
+        int tookeenCount = tookeenMapper.selectCountByExample(tookeenExample);
+        map.put("tookeen",tookeenCount);
+
+        //统计认筹
+        Example identifyExample = new Example(IdentifyLog.class);
+        Example.Criteria identifyCriteria = identifyExample.createCriteria().andEqualTo("projectId", projectId);
+        if (beginDate!=null&&endDate!=null){
+            identifyCriteria.andBetween("identifyTime",beginDate,endDate);
+        }
+        int identifyCount = identifyLogMapper.selectCountByExample(identifyExample);
+        map.put("identify",identifyCount);
+
+
         return map;
     }
 
@@ -122,9 +149,9 @@ public class ShowServiceImpl implements ShowService {
     }
 
     @Override
-    public List<Top10CusomterVO> listTop10Customer(Long projectId) {
-        List<Top10CusomterVO> top10CusomterVOS = customerMapper.selectTop10Cusomter(projectId);
-        return top10CusomterVOS;
+    public List<Top10VO> listTop10Customer(Long projectId) {
+        List<Top10VO> top10VOS = customerMapper.selectTop10Cusomter(projectId);
+        return top10VOS;
     }
 
     public List<Top10OfferBuyVo> listTop10OfferBuy(Long projectId){
@@ -133,6 +160,11 @@ public class ShowServiceImpl implements ShowService {
     }
 
 
+    @Override
+    public List<Top10VO> listTop10Tookeen(Long projectId) {
+        List<Top10VO> top10VOS = tookeenMapper.selectTop10(projectId);
+        return top10VOS;
+    }
 
 
     private void filter(Example example,Long projectId,Date beginDate,Date endDate){
@@ -182,6 +214,8 @@ public class ShowServiceImpl implements ShowService {
         List<LineChartData> followDataChartList = Lists.newArrayList();
         List<LineChartData> signDataChartList= Lists.newArrayList();
         List<LineChartData> offerDataChartList=Lists.newArrayList();
+        List<LineChartData>  tookeenDataChartList=Lists.newArrayList();
+        List<LineChartData> identifyDataChartList=Lists.newArrayList();
         //统计来访
         for (int i = 7; i >=0 ; i--) {
             DateTime dateTime = new DateTime();
@@ -246,13 +280,43 @@ public class ShowServiceImpl implements ShowService {
             offerDataChart.setX(DateUtils.format(date));
             offerDataChart.setY(offerCount);
             offerDataChartList.add(offerDataChart);
+
+            //统计拓展
+            Example tookeenExample = new Example(Tookeen.class);
+            Example.Criteria tookCriteria = tookeenExample.createCriteria().andEqualTo("projectId", projectId);
+            if (beginDate!=null&&endDate!=null){
+                tookCriteria.andBetween("createTime",beginDate,endDate);
+            }
+            int tookeenCount = tookeenMapper.selectCountByExample(tookeenExample);
+            LineChartData tookeenDataChart = new LineChartData();
+            tookeenDataChart.setX(DateUtils.format(date));
+            tookeenDataChart.setY(tookeenCount);
+            tookeenDataChartList.add(tookeenDataChart);
+
+
+            //统计认筹
+            Example identifyLogExample = new Example(IdentifyLog.class);
+            Example.Criteria identifyCriteria = identifyLogExample.createCriteria().andEqualTo("projectId", projectId);
+            if (beginDate!=null&&endDate!=null){
+                identifyCriteria.andBetween("identifyTime",beginDate,endDate);
+            }
+            int identifyCount = identifyLogMapper.selectCountByExample(identifyLogExample);
+            LineChartData identifyLogDataChart = new LineChartData();
+            identifyLogDataChart.setX(DateUtils.format(date));
+            identifyLogDataChart.setY(identifyCount);
+            identifyDataChartList.add(identifyLogDataChart);
+
         }
         map.put("customerDataChartList",customerDataChartList);
         map.put("callDataChartList",callDataChartList);
         map.put("followDataChartList",followDataChartList);
         map.put("signDataChartList",signDataChartList);
         map.put("offerDataChartList",offerDataChartList);
+        map.put("tookeenDataChartList",tookeenDataChartList);
+        map.put("identifyDataChartList",identifyDataChartList);
         return map;
     }
+
+
 
 }

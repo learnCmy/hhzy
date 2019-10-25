@@ -99,4 +99,8 @@
     </foreach>
   </select>
 
+  <select id="countNumberByStatus" resultType="integer">
+    select  count(1) from offer_buy where project_id=#{projectId} and status=#{status}
+  </select>
+
 </mapper>

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: cmy
@@ -37,6 +38,13 @@ public class OfferBuyController {
     public CommonResult updatePrePrice(@RequestBody OfferBuy offerBuy){
         offerBuyService.updatePrePrice(offerBuy);
         return CommonResult.success();
+    }
+
+    @GetMapping("/count/status")
+    @ApiOperation("统计不同状态下的认购总数")
+    public CommonResult countStatus(Long projectId){
+        Map<String, Object> map = offerBuyService.countNumberByStatus(projectId);
+        return CommonResult.success(map);
     }
 
 

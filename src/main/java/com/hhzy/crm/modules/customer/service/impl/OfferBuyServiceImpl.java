@@ -2,6 +2,7 @@ package com.hhzy.crm.modules.customer.service.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Maps;
 import com.hhzy.crm.common.base.BaseServiceImpl;
 import com.hhzy.crm.common.enums.HouseStatusEnum;
 import com.hhzy.crm.common.enums.OfferBuyStatusEnum;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: cmy
@@ -198,5 +200,26 @@ public class OfferBuyServiceImpl extends BaseServiceImpl<OfferBuy> implements Of
     @Override
     public void removeUserId(List<Long> ids) {
         offerBuyMapper.removeUserId(ids);
+    }
+
+    @Override
+    public List<OfferBuy> selectByMobile(Long projectId, String mobile) {
+        Example example = new Example(OfferBuy.class);
+        example.createCriteria().andEqualTo("mobile",mobile)
+                .andEqualTo("projectId",projectId);
+        List<OfferBuy> offerBuys = offerBuyMapper.selectByExample(example);
+        return offerBuys;
+    }
+
+    @Override
+    public Map<String, Object> countNumberByStatus(Long projectId) {
+        Map<String ,Object> map=Maps.newHashMap();
+        int unCheckedCount = offerBuyMapper.countNumberByStatus(projectId, OfferBuyStatusEnum.UNCHECKED.getCode());
+        int checkedCount = offerBuyMapper.countNumberByStatus(projectId, OfferBuyStatusEnum.CHECKED.getCode());
+        int rejectCount = offerBuyMapper.countNumberByStatus(projectId, OfferBuyStatusEnum.REJECT.getCode());
+        map.put("unCheckedNum",unCheckedCount);
+        map.put("checkedNum",checkedCount);
+        map.put("rejectNum",rejectCount);
+        return map;
     }
 }

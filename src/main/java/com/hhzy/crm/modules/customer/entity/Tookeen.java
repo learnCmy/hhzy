@@ -3,6 +3,7 @@ package com.hhzy.crm.modules.customer.entity;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 public class Tookeen {
@@ -28,7 +29,10 @@ public class Tookeen {
     /**
      * 性别
      */
-    private String sex;
+    private Integer sex;
+
+
+    private String age;
 
     /**
      * 职业
@@ -57,6 +61,22 @@ public class Tookeen {
      */
     @Column(name = "user_id")
     private Long userId;
+
+
+    /**
+     * 创建时间
+     */
+    @Column(name = "create_time")
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @Column(name = "update_time")
+    private Date updateTime;
+
+    @Transient
+    private String userName;
 
 
 }

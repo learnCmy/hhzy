@@ -8,7 +8,7 @@ import lombok.Data;
  * @Description:
  */
 @Data
-public class Top10CusomterVO {
+public class Top10VO {
 
     private String username;
 

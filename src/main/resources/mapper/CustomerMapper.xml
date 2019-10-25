@@ -61,7 +61,7 @@
   </select>
 
 
-  <select id="selectTop10Cusomter" resultType="com.hhzy.crm.modules.customer.dataobject.vo.Top10CusomterVO">
+  <select id="selectTop10Cusomter" resultType="com.hhzy.crm.modules.customer.dataobject.vo.Top10VO">
   SELECT COUNT(1) num ,a.user_id,b.username FROM `customer` a LEFT JOIN sys_user b ON a.user_id=b.user_id
   where a.project_id=#{projectId} and b.username is not null
   GROUP BY a.user_id,b.username ORDER BY num DESC LIMIT 0,10

@@ -110,7 +110,7 @@ public class FollowLogServiceImpl implements FollowLogService {
         if (CollectionUtils.isEmpty(userBatchDTO.getIds())){
             return;
         }
-        if (userBatchDTO.getIds()==null){
+        if (userBatchDTO.getUserId()==null){
             throw new BusinessException("请选择置业顾问");
         }
         Example example = new Example(FollowLog.class);

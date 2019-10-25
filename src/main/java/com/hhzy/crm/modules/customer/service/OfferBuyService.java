@@ -7,6 +7,7 @@ import com.hhzy.crm.modules.customer.dataobject.dto.UserBatchDTO;
 import com.hhzy.crm.modules.customer.entity.OfferBuy;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: cmy
@@ -37,4 +38,9 @@ public interface OfferBuyService extends BaseService<OfferBuy> {
     void updateUserBatch(UserBatchDTO userBatchDTO);
 
     void removeUserId(List<Long> ids);
+
+    List<OfferBuy>  selectByMobile(Long projectId,String mobile);
+
+
+    Map<String,Object> countNumberByStatus(Long projectId);
 }

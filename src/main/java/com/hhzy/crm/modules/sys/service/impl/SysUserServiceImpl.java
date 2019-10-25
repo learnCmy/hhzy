@@ -179,4 +179,15 @@ public class SysUserServiceImpl implements SysUserService {
 
     }
 
+    @Override
+    public String getUserName(Long userId) {
+        String username="";
+        SysUser sysUser = sysUserDao.selectByPrimaryKey(userId);
+        if (sysUser!=null){
+            username = sysUser.getUsername();
+        }
+        return username;
+    }
+
+
 }
