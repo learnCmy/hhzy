@@ -8,6 +8,7 @@ import cn.afterturn.easypoi.view.PoiBaseView;
 import com.github.pagehelper.PageInfo;
 import com.hhzy.crm.common.base.BaseController;
 import com.hhzy.crm.common.base.CrmConstant;
+import com.hhzy.crm.common.enums.IdentifySellStatusEnum;
 import com.hhzy.crm.common.enums.SourceWayEnum;
 import com.hhzy.crm.common.exception.BusinessException;
 import com.hhzy.crm.common.response.CommonResult;
@@ -125,10 +126,19 @@ public class IdentifyController extends BaseController {
         String sortClause = StringHandleUtils.camel2UnderMultipleline(identifyDTO.getSortClause());
         identifyDTO.setSortClause(sortClause);
         PageInfo<IdentifyLog> identifyLogPageInfo = identifyService.selectList(identifyDTO);
+        SysUser user = getUser();
+        Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
         List<IdentifyLog> list = identifyLogPageInfo.getList();
-        for (IdentifyLog identifyLog : list) {
+        for (int i = 0; i <list.size() ; i++) {
+            IdentifyLog identifyLog = list.get(i);
+            identifyLog.setId(Long.valueOf(i));
             SourceWayEnum sourceWayEnum = EnumUtil.getByCode(identifyLog.getSourceWay(), SourceWayEnum.class);
             identifyLog.setSourceWayStr(sourceWayEnum==null?null:sourceWayEnum.getMessage());
+            if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
+                identifyLog.setMobile(null);
+            }
+            IdentifySellStatusEnum identifySellStatusEnum = EnumUtil.getByCode(identifyLog.getSellStatus(), IdentifySellStatusEnum.class);
+            identifyLog.setSellStatusStr(identifySellStatusEnum==null?null:identifySellStatusEnum.getMessage());
         }
         Map<String, Object> map = new HashMap<String, Object>();
         TemplateExportParams params = new TemplateExportParams(

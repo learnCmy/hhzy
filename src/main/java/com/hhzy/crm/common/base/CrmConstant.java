@@ -9,6 +9,9 @@ public class CrmConstant {
     /** 超级管理员ID */
     public static final int SUPER_ADMIN = 1;
 
+
+    public static final String phoneRegex= "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
+
     public class Permissions{
 
         public static final String SENSITIVE="sensitive";

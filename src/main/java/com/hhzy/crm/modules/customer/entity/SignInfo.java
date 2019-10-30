@@ -72,11 +72,17 @@ public class SignInfo {
     @Column(name = "is_submit")
     private Boolean isSubmit;
 
+    @Transient
+    private String isSubmitStr;
+
     /**
      * 是否网签
      */
     @Column(name = "is_net_sign")
     private Boolean isNetSign;
+
+    @Transient
+    private String isNetSignStr;
 
     /**
      * 合同编号
@@ -122,6 +128,9 @@ public class SignInfo {
     @Column(name ="commission" )
     private  Boolean commission;
 
+    @Transient
+    private String commissionStr;
+
     /**
      * 结算情况
      */
@@ -141,6 +150,9 @@ public class SignInfo {
     //是否备案
     @Column(name = "is_record")
     private Boolean isRecord;
+
+    @Transient
+    private String  isRecordStr;
 
 
     //业务宗号

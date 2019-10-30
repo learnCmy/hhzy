@@ -90,10 +90,15 @@ public class IdentifyLog {
     private String userName;
 
     /**
-     * 买售状态 （1-已购买 2已购买住宅 3- 已退卡）
+     * 买售状态 （0-已购卡,1-已购买商铺 2-已购买住宅 3-已退卡）
      */
     @Column(name = "sell_status")
     private Integer sellStatus;
+
+
+    @Transient
+    private String sellStatusStr;
+
 
     /**
      * 退卡日期

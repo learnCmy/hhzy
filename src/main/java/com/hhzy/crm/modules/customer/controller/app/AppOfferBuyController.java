@@ -13,6 +13,7 @@ import com.hhzy.crm.modules.customer.service.OfferBuyService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,7 +51,18 @@ public class AppOfferBuyController extends BaseController {
         if (!HouseStatusEnum.SELLING.getCode().equals(house.getStatus())){
             throw  new BusinessException("房屋为已售或者没开卖,请重新选择");
         }
-        offerBuyService.save(offerBuy);
+        String mobile = offerBuy.getMobile();
+        if (StringUtils.isEmpty(mobile)||mobile.length()!=11){
+            throw  new BusinessException("请正确填写手机号");
+        }else {
+           /* Pattern pattern = Pattern.compile(CrmConstant.phoneRegex);
+            boolean matches = pattern.matcher(mobile).matches();
+            if (matches){*/
+           offerBuyService.save(offerBuy);
+           /* }else {
+                throw  new BusinessException("请正确填写手机号");
+            }*/
+        }
         return CommonResult.success();
     }
 

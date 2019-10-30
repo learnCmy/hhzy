@@ -1,6 +1,8 @@
 package com.hhzy.crm.modules.customer.controller.web;
 
 import com.github.pagehelper.PageInfo;
+import com.hhzy.crm.common.base.BaseController;
+import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.response.CommonResult;
 import com.hhzy.crm.common.utils.StringHandleUtils;
 import com.hhzy.crm.modules.customer.dataobject.dto.OfferBuyDTO;
@@ -8,6 +10,8 @@ import com.hhzy.crm.modules.customer.dataobject.dto.UserBatchDTO;
 import com.hhzy.crm.modules.customer.entity.OfferBuy;
 import com.hhzy.crm.modules.customer.service.HouseService;
 import com.hhzy.crm.modules.customer.service.OfferBuyService;
+import com.hhzy.crm.modules.sys.entity.SysUser;
+import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -16,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Auther: cmy
@@ -25,13 +30,16 @@ import java.util.Map;
 @RestController
 @Api(description = "网页端认筹管理")
 @RequestMapping("/web/offerbuy")
-public class OfferBuyController {
+public class OfferBuyController extends BaseController {
 
     @Autowired
     private OfferBuyService offerBuyService;
 
     @Autowired
     private HouseService houseService;
+
+    @Autowired
+    private ShiroService shiroService;
 
     @PostMapping("/update/preprice")
     @ApiOperation("修改定金")
@@ -54,6 +62,11 @@ public class OfferBuyController {
         String sortClause = StringHandleUtils.camel2UnderMultipleline(offerBuyDTO.getSortClause());
         offerBuyDTO.setSortClause(sortClause);
         PageInfo<OfferBuy> offerBuyPageInfo = offerBuyService.selectList(offerBuyDTO);
+        SysUser user = getUser();
+        Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
+            offerBuyPageInfo.getList().forEach(e->e.setMobile(null));
+        }
         return CommonResult.success(offerBuyPageInfo);
     }
 

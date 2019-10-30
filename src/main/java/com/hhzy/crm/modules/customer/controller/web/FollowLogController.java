@@ -1,5 +1,8 @@
 package com.hhzy.crm.modules.customer.controller.web;
 
+import cn.afterturn.easypoi.entity.vo.TemplateExcelConstants;
+import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
+import cn.afterturn.easypoi.view.PoiBaseView;
 import com.github.pagehelper.PageInfo;
 import com.hhzy.crm.common.base.BaseController;
 import com.hhzy.crm.common.base.CrmConstant;
@@ -9,16 +12,21 @@ import com.hhzy.crm.common.utils.StringHandleUtils;
 import com.hhzy.crm.modules.customer.dataobject.dto.FollowLogDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.UserBatchDTO;
 import com.hhzy.crm.modules.customer.entity.FollowLog;
+import com.hhzy.crm.modules.customer.entity.Project;
 import com.hhzy.crm.modules.customer.service.FollowLogService;
+import com.hhzy.crm.modules.customer.service.ProjectService;
 import com.hhzy.crm.modules.sys.entity.SysUser;
 import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -37,6 +45,9 @@ public class FollowLogController extends BaseController {
 
     @Autowired
     private ShiroService shiroService;
+
+    @Autowired
+    private ProjectService projectService;
 
     @PostMapping("/list")
     @ApiOperation("跟进记录列表")
@@ -98,6 +109,33 @@ public class FollowLogController extends BaseController {
         return CommonResult.success();
     }
 
+
+    @GetMapping("/export")
+    @ApiOperation("认筹导出")
+    public void export(ModelMap modelMap, FollowLogDTO followLogDTO ){
+        String sortClause = StringHandleUtils.camel2UnderMultipleline(followLogDTO.getSortClause());
+        followLogDTO.setSortClause(sortClause);
+        PageInfo<FollowLog> select = followLogService.select(followLogDTO);
+        SysUser user = getUser();
+        Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        List<FollowLog> list = select.getList();
+        for (FollowLog followLog : list) {
+            if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
+                followLog.setMobile(null);
+            }
+        }
+        Map<String, Object> map = new HashMap<String, Object>();
+        TemplateExportParams params = new TemplateExportParams(
+                "excel-template/follow.xlsx");
+        map.put("list",list);
+        Project project = projectService.queryById(followLogDTO.getProjectId());
+        map.put("projectName",project.getProjectName());
+        modelMap.put(TemplateExcelConstants.FILE_NAME, "跟进记录表");
+        modelMap.put(TemplateExcelConstants.PARAMS, params);
+        modelMap.put(TemplateExcelConstants.MAP_DATA, map);
+        PoiBaseView.render(modelMap, request, response,
+                TemplateExcelConstants.EASYPOI_TEMPLATE_EXCEL_VIEW);
+    }
 
 
 

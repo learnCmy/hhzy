@@ -55,7 +55,7 @@
             parameterType="com.hhzy.crm.modules.customer.dataobject.dto.SignDTO">
         SELECT
             a.*,b.house_id,c.name as house_name,c.house_info,c.acreage,c.acreage_price,c.amount_price,c.status as house_status,c.info as house_describe,
-            c.type as houseType,c.room_no,c.floor_level,b.name,b.sex,b.mobile,b.id_card,b.address,b.offer_buy_time,b.user_id,b.pre_price,b.house_id,
+            c.type as houseType,c.room_no,c.build_no,c.floor_level,b.name,b.sex,b.mobile,b.id_card,b.address,b.offer_buy_time,b.user_id,b.pre_price,b.house_id,
             b.work_address,b.profession,b.age,b.home_structure,b.buy_motive,b.source_way,d.username as user_name
         FROM
             sign_info a

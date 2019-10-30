@@ -113,9 +113,14 @@ public class CustomerController extends BaseController {
         customerDTO.setSortClause(sortClause);
         PageInfo<Customer> customerPageInfo = customerService.selectAllCustomer(customerDTO);
         List<Customer> list = customerPageInfo.getList();
+        SysUser user = getUser();
+        Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
         for (Customer customer : list) {
             SourceWayEnum sourceWayEnum = EnumUtil.getByCode(customer.getSourceWay(), SourceWayEnum.class);
             customer.setSourceWayStr(sourceWayEnum==null?null:sourceWayEnum.getMessage());
+            if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
+               customer.setMobile(null);
+            }
         }
         Map<String, Object> map = new HashMap<String, Object>();
         TemplateExportParams params = new TemplateExportParams(

@@ -5,6 +5,7 @@ import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.view.PoiBaseView;
 import com.github.pagehelper.PageInfo;
 import com.hhzy.crm.common.base.BaseController;
+import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.enums.HouseStatusEnum;
 import com.hhzy.crm.common.enums.SourceWayEnum;
 import com.hhzy.crm.common.response.CommonResult;
@@ -16,6 +17,8 @@ import com.hhzy.crm.modules.customer.entity.Project;
 import com.hhzy.crm.modules.customer.entity.SignInfo;
 import com.hhzy.crm.modules.customer.service.ProjectService;
 import com.hhzy.crm.modules.customer.service.SignInfoService;
+import com.hhzy.crm.modules.sys.entity.SysUser;
+import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Auther: cmy
@@ -43,6 +47,9 @@ public class SignController extends BaseController {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private ShiroService shiroService;
 
 
     @PostMapping("/save")
@@ -76,6 +83,11 @@ public class SignController extends BaseController {
         String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());
         signDTO.setSortClause(sortClause);
         PageInfo<SignVo> signVoPageInfo = signInfoService.selectSignVo(signDTO);
+        SysUser user = getUser();
+        Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
+            signVoPageInfo.getList().forEach(e->e.setMobile(null));
+        }
         return CommonResult.success(signVoPageInfo);
     }
 
@@ -99,7 +111,9 @@ public class SignController extends BaseController {
         signDTO.setSortClause(sortClause);
         PageInfo<SignVo> signVoPageInfo = signInfoService.selectSignVo(signDTO);
         List<SignVo> list = signVoPageInfo.getList();
-        this.handleSingVO(list);
+        SysUser user = getUser();
+        Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        this.handleSingVO(list,userPermissions);
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("list",list);
         Project project = projectService.queryById(signDTO.getProjectId());
@@ -126,7 +140,9 @@ public class SignController extends BaseController {
         Project project = projectService.queryById(signDTO.getProjectId());
         Map<String, Object> map = new HashMap<String, Object>();
         List<SignVo> list = signVoPageInfo.getList();
-        this.handleSingVO(list);
+        SysUser user = getUser();
+        Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        this.handleSingVO(list,userPermissions);
         map.put("list",list);
         map.put("projectName",project.getProjectName());
         TemplateExportParams params = new TemplateExportParams(
@@ -142,12 +158,39 @@ public class SignController extends BaseController {
 
 
 
-    private void handleSingVO(List<SignVo> list){
+    private void handleSingVO(List<SignVo> list,Set<String> userPermissions){
         for (SignVo signVo : list) {
             HouseStatusEnum houseStatusEnum = EnumUtil.getByCode(signVo.getHouseStatus(), HouseStatusEnum.class);
             signVo.setHouseStatusStr(houseStatusEnum==null?null:houseStatusEnum.getMessage());
             SourceWayEnum sourceWayEnum = EnumUtil.getByCode(signVo.getSourceWay(), SourceWayEnum.class);
             signVo.setSourceWayStr(sourceWayEnum==null?null:sourceWayEnum.getMessage());
+            if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
+                signVo.setMobile(null);
+            }
+           if (signVo.getIsSubmit()!=null&&signVo.getIsSubmit()){
+               signVo.setIsSubmitStr("是");
+           }else {
+               signVo.setIsSubmitStr("否");
+           }
+           if (signVo.getIsRecord()!=null&&signVo.getIsRecord()){
+               signVo.setIsRecordStr("是");
+           }else {
+               signVo.setIsRecordStr("否");
+           }
+
+            if (signVo.getIsNetSign()!=null&&signVo.getIsNetSign()){
+                signVo.setIsNetSignStr("是");
+            }else {
+                signVo.setIsNetSignStr("否");
+            }
+
+            if (signVo.getCommission()!=null&&signVo.getCommission()){
+                signVo.setCommissionStr("是");
+            }else {
+                signVo.setCommissionStr("否");
+            }
+
+
         }
     }
 }
