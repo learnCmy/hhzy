@@ -22,6 +22,7 @@ import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -120,8 +121,8 @@ public class SignController extends BaseController {
         map.put("projectName",project.getProjectName());
         TemplateExportParams params = new TemplateExportParams(
                 "excel-template/sign2.xlsx");
-
-        modelMap.put(TemplateExcelConstants.FILE_NAME, "商铺订购信息");
+        String yyyyMMdd = new DateTime().toString("yyyyMMdd");
+        modelMap.put(TemplateExcelConstants.FILE_NAME, "商铺订购信息"+yyyyMMdd);
         modelMap.put(TemplateExcelConstants.PARAMS, params);
         modelMap.put(TemplateExcelConstants.MAP_DATA, map);
         PoiBaseView.render(modelMap, request, response,
@@ -147,8 +148,8 @@ public class SignController extends BaseController {
         map.put("projectName",project.getProjectName());
         TemplateExportParams params = new TemplateExportParams(
                 "excel-template/sign1.xlsx");
-
-        modelMap.put(TemplateExcelConstants.FILE_NAME, "住宅订购信息");
+        String yyyyMMdd = new DateTime().toString("yyyyMMdd");
+        modelMap.put(TemplateExcelConstants.FILE_NAME,"住宅订购信息"+yyyyMMdd);
         modelMap.put(TemplateExcelConstants.PARAMS, params);
         modelMap.put(TemplateExcelConstants.MAP_DATA, map);
         PoiBaseView.render(modelMap, request, response,

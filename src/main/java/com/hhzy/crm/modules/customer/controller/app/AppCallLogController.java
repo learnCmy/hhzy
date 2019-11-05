@@ -2,11 +2,13 @@ package com.hhzy.crm.modules.customer.controller.app;
 
 import com.github.pagehelper.PageInfo;
 import com.hhzy.crm.common.base.BaseController;
+import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.exception.BusinessException;
 import com.hhzy.crm.common.response.CommonResult;
 import com.hhzy.crm.modules.customer.dataobject.dto.CallLogDTO;
 import com.hhzy.crm.modules.customer.entity.CallLog;
 import com.hhzy.crm.modules.customer.service.CallLogService;
+import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Auther: cmy
@@ -29,6 +32,9 @@ public class AppCallLogController extends BaseController {
 
     @Autowired
     private CallLogService callLogService;
+
+    @Autowired
+    private ShiroService shiroService;
 
 
     @PostMapping("/save")
@@ -68,6 +74,10 @@ public class AppCallLogController extends BaseController {
     public CommonResult list(@RequestBody CallLogDTO callLogDTO){
         Long userId = getUserId();
         callLogDTO.setUserId(userId);
+        Set<String> userPermissions = shiroService.getUserPermissions(userId);
+        if (userPermissions.contains(CrmConstant.Permissions.LOOKOTHER)){
+            callLogDTO.setUserId(null);
+        }
         callLogDTO.setSortClause("call_time");
         callLogDTO.setSort("desc");
         PageInfo<CallLog> callLogPageInfo = callLogService.selectList(callLogDTO);

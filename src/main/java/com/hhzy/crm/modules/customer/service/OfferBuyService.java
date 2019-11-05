@@ -33,7 +33,7 @@ public interface OfferBuyService extends BaseService<OfferBuy> {
 
     void updateUser(Long id,Long userId);
 
-    void updateStatus(Long id,Integer status);
+    void updateStatus(Long id,Integer status,String refuseRemark);
 
     void updateUserBatch(UserBatchDTO userBatchDTO);
 

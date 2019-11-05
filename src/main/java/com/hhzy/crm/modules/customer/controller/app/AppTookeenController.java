@@ -2,11 +2,13 @@ package com.hhzy.crm.modules.customer.controller.app;
 
 import com.github.pagehelper.PageInfo;
 import com.hhzy.crm.common.base.BaseController;
+import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.response.CommonResult;
 import com.hhzy.crm.common.utils.StringHandleUtils;
 import com.hhzy.crm.modules.customer.dataobject.dto.TookeenDTO;
 import com.hhzy.crm.modules.customer.entity.Tookeen;
 import com.hhzy.crm.modules.customer.service.TookeenService;
+import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Auther: cmy
@@ -28,6 +31,9 @@ public class AppTookeenController extends BaseController {
 
     @Autowired
     private TookeenService tookeenService;
+
+    @Autowired
+    private ShiroService shiroService;
 
     @PostMapping("/save")
     @ApiOperation("录入客户")
@@ -60,6 +66,10 @@ public class AppTookeenController extends BaseController {
         tookeenDTO.setUserId(userId);
         String sortClause = StringHandleUtils.camel2UnderMultipleline(tookeenDTO.getSortClause());
         tookeenDTO.setSortClause(sortClause);
+        Set<String> userPermissions = shiroService.getUserPermissions(userId);
+        if (userPermissions.contains(CrmConstant.Permissions.LOOKOTHER)){
+            tookeenDTO.setUserId(null);
+        }
         PageInfo<Tookeen> tookeenPageInfo = tookeenService.selectList(tookeenDTO);
         return  CommonResult.success(tookeenPageInfo);
     }

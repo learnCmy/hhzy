@@ -9,6 +9,7 @@
     <result column="project_name" jdbcType="VARCHAR" property="projectName" />
     <result column="live_address_config" jdbcType="VARCHAR" property="liveAddressConfig" />
     <result column="work_address_config" jdbcType="VARCHAR" property="workAddressConfig" />
+    <result column="bank_category_config" jdbcType="VARCHAR" property="bankCategoryConfig"/>
   </resultMap>
 
 </mapper>

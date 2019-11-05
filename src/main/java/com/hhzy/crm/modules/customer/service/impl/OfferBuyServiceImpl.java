@@ -159,12 +159,15 @@ public class OfferBuyServiceImpl extends BaseServiceImpl<OfferBuy> implements Of
     }
 
     @Override
-    public void updateStatus(Long id, Integer status) {
+    public void updateStatus(Long id, Integer status,String refuseRemark) {
         OfferBuy buy = this.selectById(id);
         if (status.equals(OfferBuyStatusEnum.CHECKED.getCode())&&buy.getPrePrice()==null){
             throw  new BusinessException("请先填写定金，在审核通过");
         }
         buy.setStatus(status);
+        if (status.equals(OfferBuyStatusEnum.REJECT.getCode())){
+            buy.setRefuseRemark(refuseRemark);
+        }
         this.updateSelective(buy);
         //更新房屋状态
         if (status.equals(OfferBuyStatusEnum.CHECKED.getCode())){

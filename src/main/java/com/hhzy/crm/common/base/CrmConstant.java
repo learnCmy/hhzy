@@ -17,6 +17,8 @@ public class CrmConstant {
         public static final String SENSITIVE="sensitive";
 
         public static final String UPDATEUSER="updateuser";
+
+        public static  final  String LOOKOTHER="lookother";
     }
 
 

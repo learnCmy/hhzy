@@ -23,6 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -126,8 +127,8 @@ public class CustomerController extends BaseController {
         TemplateExportParams params = new TemplateExportParams(
                 "excel-template/customer.xlsx");
         map.put("list",list);
-
-        modelMap.put(TemplateExcelConstants.FILE_NAME, "来访客户登记表");
+        String yyyyMMdd = new DateTime().toString("yyyyMMdd");
+        modelMap.put(TemplateExcelConstants.FILE_NAME, "来访客户登记表"+yyyyMMdd);
         modelMap.put(TemplateExcelConstants.PARAMS, params);
         modelMap.put(TemplateExcelConstants.MAP_DATA, map);
         PoiBaseView.render(modelMap, request, response,

@@ -45,6 +45,8 @@ public class SignDTO  extends BaseEntity {
      */
     private Integer houseType;
 
+    private String bankCategory;
+
 
     @ApiModelProperty("排序字段")
     private String sortClause="signTime";

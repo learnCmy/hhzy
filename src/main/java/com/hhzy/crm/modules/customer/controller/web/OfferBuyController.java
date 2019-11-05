@@ -82,8 +82,8 @@ public class OfferBuyController extends BaseController {
     @PostMapping("/update/status")
     @ApiOperation("修改审核状态")
     @RequiresPermissions("check")
-    public CommonResult updateStatus(Long id,Integer status){
-        offerBuyService.updateStatus(id,status);
+    public CommonResult updateStatus(Long id,Integer status,String refuseRemark){
+        offerBuyService.updateStatus(id,status,refuseRemark);
         return CommonResult.success();
     }
 

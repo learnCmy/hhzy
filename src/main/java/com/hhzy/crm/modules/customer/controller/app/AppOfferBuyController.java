@@ -2,6 +2,7 @@ package com.hhzy.crm.modules.customer.controller.app;
 
 import com.github.pagehelper.PageInfo;
 import com.hhzy.crm.common.base.BaseController;
+import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.enums.HouseStatusEnum;
 import com.hhzy.crm.common.enums.OfferBuyStatusEnum;
 import com.hhzy.crm.common.exception.BusinessException;
@@ -10,6 +11,7 @@ import com.hhzy.crm.modules.customer.entity.House;
 import com.hhzy.crm.modules.customer.entity.OfferBuy;
 import com.hhzy.crm.modules.customer.service.HouseService;
 import com.hhzy.crm.modules.customer.service.OfferBuyService;
+import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Auther: cmy
@@ -35,6 +38,9 @@ public class AppOfferBuyController extends BaseController {
 
     @Autowired
     private HouseService houseService;
+
+    @Autowired
+    private ShiroService shiroService;
 
 
     @PostMapping("/save")
@@ -102,6 +108,10 @@ public class AppOfferBuyController extends BaseController {
     @ApiOperation("认购记录列表")
     public CommonResult list(String keyWord,Long projectId,Integer page,Integer pageSize) {
         Long userId = getUserId();
+        Set<String> userPermissions = shiroService.getUserPermissions(userId);
+        if (userPermissions.contains(CrmConstant.Permissions.LOOKOTHER)){
+            userId=null;
+        }
         PageInfo<OfferBuy> offerBuyPageInfo = offerBuyService.selectByName(keyWord, userId,projectId,page, pageSize);
         return CommonResult.success(offerBuyPageInfo);
     }

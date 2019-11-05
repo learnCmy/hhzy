@@ -127,4 +127,15 @@ public class OfferBuy {
     @Column(name = "buy_motive")
     private String buyMotive;
 
+    /**
+     * 驳回原因
+     */
+    @Column(name = "refuse_remark")
+    private String refuseRemark;
+
+    /**
+     * 建筑面积
+     */
+    @Transient
+    private BigDecimal acreage;
 }
