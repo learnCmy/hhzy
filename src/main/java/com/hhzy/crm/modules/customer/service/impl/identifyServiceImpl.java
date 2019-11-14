@@ -6,32 +6,26 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.hhzy.crm.common.base.BaseServiceImpl;
 import com.hhzy.crm.common.enums.IdentifySellStatusEnum;
+import com.hhzy.crm.common.enums.OfferBuyStatusEnum;
 import com.hhzy.crm.common.exception.BusinessException;
 import com.hhzy.crm.common.utils.EnumUtil;
-import com.hhzy.crm.modules.customer.dao.CustomerMapper;
 import com.hhzy.crm.modules.customer.dao.IdentifyLogMapper;
 import com.hhzy.crm.modules.customer.dataobject.dto.IdentifyDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.UserBatchDTO;
-import com.hhzy.crm.modules.customer.dataobject.importPOI.CustomerImport;
 import com.hhzy.crm.modules.customer.dataobject.importPOI.IdentifyImport;
-import com.hhzy.crm.modules.customer.entity.Customer;
 import com.hhzy.crm.modules.customer.entity.IdentifyLog;
 import com.hhzy.crm.modules.customer.service.IdentifyService;
 import com.hhzy.crm.modules.sys.dao.SysUserDao;
 import com.hhzy.crm.modules.sys.entity.SysUser;
-import com.hhzy.crm.modules.sys.service.SysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.EmitUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
-import java.rmi.MarshalledObject;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -189,6 +183,20 @@ public class identifyServiceImpl extends BaseServiceImpl<IdentifyLog> implements
     @Override
     public void updateByPrimaryKeySelective(IdentifyLog identifyLog){
         identifyLogMapper.updateByPrimaryKeySelective(identifyLog);
+    }
+
+    @Override
+    public Map<String, Object> countNumberByStatus(Long projectId) {
+        Map<String ,Object> map=Maps.newHashMap();
+        int buycardCount = identifyLogMapper.countNumberBySellStatus(projectId,IdentifySellStatusEnum.BUYCARD.getCode());
+        int buyshangpuCount = identifyLogMapper.countNumberBySellStatus(projectId, IdentifySellStatusEnum.BUYSHANGPU.getCode());
+        int buyzhuzhaiCount= identifyLogMapper.countNumberBySellStatus(projectId, IdentifySellStatusEnum.BUYZHUZHAI.getCode());
+        int refundcardCount = identifyLogMapper.countNumberBySellStatus(projectId, IdentifySellStatusEnum.REFUNDCARD.getCode());
+        map.put("buycardCount",buycardCount);
+        map.put("buyshangpuCount",buyshangpuCount);
+        map.put("buyzhuzhaiCount",buyzhuzhaiCount);
+        map.put("refundcardCount",refundcardCount);
+        return map;
     }
 
 

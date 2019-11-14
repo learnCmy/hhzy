@@ -78,6 +78,20 @@ public class TookeenController extends BaseController {
     }
 
 
+    @PostMapping("/update")
+    @ApiOperation("更新拓展客户信息")
+    public CommonResult updateTookeen(@RequestBody Tookeen tookeen){
+        tookeenService.updateBasicTookeen(tookeen);
+        return CommonResult.success();
+    }
+
+    @PostMapping("/info/{id}")
+    @ApiOperation("拓展客户详细信息")
+    public CommonResult info(@PathVariable Long id){
+        Tookeen tookeen = tookeenService.queryById(id);
+        return  CommonResult.success(tookeen);
+    }
+
 
     @GetMapping("/export")
     @ApiOperation("/来访客户登记导出")

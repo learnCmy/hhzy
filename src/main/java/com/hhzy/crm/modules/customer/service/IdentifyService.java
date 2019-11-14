@@ -47,4 +47,5 @@ public interface IdentifyService extends BaseService<IdentifyLog> {
     void updateByPrimaryKeySelective(IdentifyLog identifyLog);
 
 
+    Map<String,Object> countNumberByStatus(Long projectId);
 }

@@ -158,4 +158,7 @@ public class SignInfo {
     //业务宗号
     @Column(name = "business_no")
     private String businessNo;
+
+    @Column(name = "confirm_info")
+    private Boolean confirmInfo;
 }

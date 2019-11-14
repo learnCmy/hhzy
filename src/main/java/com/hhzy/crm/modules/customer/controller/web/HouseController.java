@@ -1,24 +1,33 @@
 package com.hhzy.crm.modules.customer.controller.web;
 
+import cn.afterturn.easypoi.entity.vo.TemplateExcelConstants;
 import cn.afterturn.easypoi.excel.ExcelImportUtil;
 import cn.afterturn.easypoi.excel.entity.ImportParams;
+import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
+import cn.afterturn.easypoi.view.PoiBaseView;
 import com.github.pagehelper.PageInfo;
 import com.hhzy.crm.common.base.BaseController;
+import com.hhzy.crm.common.enums.HouseStatusEnum;
 import com.hhzy.crm.common.response.CommonResult;
+import com.hhzy.crm.common.utils.EnumUtil;
 import com.hhzy.crm.common.utils.StringHandleUtils;
 import com.hhzy.crm.modules.customer.dataobject.dto.HouseDTO;
 import com.hhzy.crm.modules.customer.dataobject.importPOI.HouseImport;
 import com.hhzy.crm.modules.customer.entity.House;
+import com.hhzy.crm.modules.customer.entity.Project;
 import com.hhzy.crm.modules.customer.service.HouseService;
+import com.hhzy.crm.modules.customer.service.ProjectService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +39,9 @@ public class HouseController extends BaseController {
 
     @Autowired
     private HouseService houseService;
+
+    @Autowired
+    private ProjectService projectService;
 
     @PostMapping("/save")
     @ApiOperation("新增房屋信息")
@@ -124,9 +136,37 @@ public class HouseController extends BaseController {
 
 
 
+    @GetMapping("/export")
+    @ApiOperation("房屋导出")
+    public void export(ModelMap modelMap, HouseDTO houseDTO){
+        houseDTO.setSortClause("type,name,build_no,floor_level,room_no");
+        houseDTO.setSort("asc");
+        PageInfo<House> housePageInfo = houseService.selectHouse(houseDTO);
+        List<House> list = housePageInfo.getList();
+        for (House house : list) {
+            Integer status = house.getStatus();
+            HouseStatusEnum houseStatusEnum = EnumUtil.getByCode(status, HouseStatusEnum.class);
+            if (houseStatusEnum!=null){
+                house.setStatusStr(houseStatusEnum.getMessage());
+            }
+            Integer type = house.getType();
+            if (type!=null){
+                house.setTypeStr(type==1?"住宅":"商铺");
+            }
 
-
-
+        }
+        Map<String, Object> map = new HashMap<String, Object>();
+        TemplateExportParams params = new TemplateExportParams(
+                "excel-template/house.xlsx");
+        map.put("list",list);
+        Project project = projectService.queryById(houseDTO.getProjectId());
+        map.put("projectName",project.getProjectName());
+        modelMap.put(TemplateExcelConstants.FILE_NAME, "房屋表");
+        modelMap.put(TemplateExcelConstants.PARAMS, params);
+        modelMap.put(TemplateExcelConstants.MAP_DATA, map);
+        PoiBaseView.render(modelMap, request, response,
+                TemplateExcelConstants.EASYPOI_TEMPLATE_EXCEL_VIEW);
+    }
 
 
 

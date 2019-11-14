@@ -69,6 +69,14 @@ public class IdentifyController extends BaseController {
     }
 
 
+    @GetMapping("/count/status")
+    @ApiOperation("统计不同状态下的认筹总数")
+    public CommonResult countStatus(Long projectId){
+        Map<String, Object> map = identifyService.countNumberByStatus(projectId);
+        return CommonResult.success(map);
+    }
+
+
     @GetMapping("/update/user")
     @ApiOperation("修改置业顾问")
     @RequiresPermissions("updateuser")

@@ -24,6 +24,8 @@ public class IdentifyDTO extends BaseEntity {
 
     private Date endTime;
 
+    private Integer sellStatus;
+
     //vip卡号
     private String vipCard;
 

@@ -26,4 +26,5 @@ public interface IdentifyLogMapper extends MyMapper<IdentifyLog> {
     List<String> selectMobile(@Param("projectId") Long projectId);
 
 
+    int countNumberBySellStatus(@Param("projectId") Long projectId, @Param("status") Integer status);
 }

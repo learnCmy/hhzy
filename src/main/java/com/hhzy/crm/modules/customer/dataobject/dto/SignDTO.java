@@ -18,9 +18,9 @@ public class SignDTO  extends BaseEntity {
     private Long projectId;
 
 
-    private Date startTime;
+    private Date signStartTime;
 
-    private Date  endTime;
+    private Date  signEndTime;
 
     private String dateType; //'sign' 'offer' 'loan'
 
@@ -46,6 +46,8 @@ public class SignDTO  extends BaseEntity {
     private Integer houseType;
 
     private String bankCategory;
+
+    private Boolean showConfirm;
 
 
     @ApiModelProperty("排序字段")

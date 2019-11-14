@@ -74,6 +74,10 @@
       and a.create_time <![CDATA[ <= ]]> #{identifyDTO.endTime}
     </if>
 
+    <if test="identifyDTO.sellStatus!=null">
+      and a.sell_status=#{identifyDTO.sellStatus}
+    </if>
+
     order by ${identifyDTO.sortClause} ${identifyDTO.sort}
 
   </select>
@@ -86,6 +90,12 @@
     <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
       #{item}
     </foreach>
+  </select>
+
+
+
+  <select id="countNumberBySellStatus" resultType="integer">
+     select  count(1) from identify_log where project_id=#{projectId} and sell_status=#{status}
   </select>
 
 </mapper>

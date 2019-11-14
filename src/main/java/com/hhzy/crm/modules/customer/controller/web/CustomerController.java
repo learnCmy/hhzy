@@ -77,6 +77,7 @@ public class CustomerController extends BaseController {
     }
 
 
+
     @PostMapping("/update/user/batch")
     @ApiOperation("批量修改置业顾问")
     @RequiresPermissions("updateuser")

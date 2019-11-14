@@ -47,7 +47,7 @@ public class CallLogServiceImpl implements CallLogService {
     public void updateCallLog(CallLog callLog) {
         this.saveCheck(callLog.getMobile(),callLog.getProjectId(),callLog.getId());
         callLog.setUpdateTime(new Date());
-        callLogMapper.updateByPrimaryKey(callLog);
+        callLogMapper.updateByPrimaryKeySelective(callLog);
     }
 
 

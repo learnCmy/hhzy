@@ -140,14 +140,14 @@ public class OfferBuyServiceImpl extends BaseServiceImpl<OfferBuy> implements Of
             PageHelper.startPage(offerBuyDTO.getPage(),offerBuyDTO.getPageSize());
         }
         List<OfferBuy> offerBuys = offerBuyMapper.selectList(offerBuyDTO);
-        offerBuys.forEach(e->{
+        /*offerBuys.forEach(e->{
             Example example = new Example(SignInfo.class);
             example.createCriteria().andEqualTo("offerBuyId",e.getId()).andEqualTo("projectId",e.getProjectId());
             List<SignInfo> signInfoList= signInfoMapper.selectByExample(example);
             if (CollectionUtils.isNotEmpty(signInfoList)){
                 e.setSignId(signInfoList.get(0).getId());
             }
-        });
+        });*/
         return new PageInfo<>(offerBuys);
     }
 

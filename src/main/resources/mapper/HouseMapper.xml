@@ -20,8 +20,9 @@
     <result column="floor_level" jdbcType="VARCHAR" property="floorLevel" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="build_no" jdbcType="VARCHAR" property="buildNo"></result>
-    <result column="room_no" jdbcType="VARCHAR" property="roomNo"></result>
+    <result column="build_no" jdbcType="VARCHAR" property="buildNo"/>
+    <result column="room_no" jdbcType="VARCHAR" property="roomNo"/>
+    <result column="remark" jdbcType="VARCHAR" property="remark"/>
   </resultMap>
 
 

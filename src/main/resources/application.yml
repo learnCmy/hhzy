@@ -33,4 +33,8 @@ restart:
   include:
     pagehelper: /pagehelper-[\\w-\\.]+jar
 
+aliyun:
+  AccessKeyID: LTAI4FphGrCPVRHxjMd5kGsU
+  AccessKeySecret: sOPjlRZbzq4mUDxUEP6pzXnHrDMPHA
+
 

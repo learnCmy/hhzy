@@ -45,7 +45,7 @@ public class FollowLogServiceImpl implements FollowLogService {
     public void update(FollowLog followLog) {
         followLog.setCreateTime(new Date());
         followLog.setUpdateTime(new Date());
-        followLogMapper.updateByPrimaryKey(followLog);
+        followLogMapper.updateByPrimaryKeySelective(followLog);
     }
 
     @Override

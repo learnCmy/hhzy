@@ -27,10 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @Auther: cmy
@@ -93,7 +90,6 @@ public class SignController extends BaseController {
     }
 
 
-
     @PostMapping("/delete")
     @ApiOperation("删除签约信息")
     @RequiresPermissions("sign")
@@ -103,13 +99,25 @@ public class SignController extends BaseController {
     }
 
 
+    @GetMapping("/confirm")
+    @ApiOperation("确认签约信息")
+    public CommonResult confirm(Long signId,Boolean confirmInfo){
+        SignInfo signInfo = new SignInfo();
+        signInfo.setId(signId);
+        signInfo.setUpdateTime(new Date());
+        signInfo.setConfirmInfo(confirmInfo);
+        signInfoService.updateSelective(signInfo);
+        return  CommonResult.success();
+    }
 
     @GetMapping("/export/shop")
     @ApiOperation("/导出商铺订购信息表")
     public void exportshangpu(ModelMap modelMap,SignDTO signDTO){
         signDTO.setHouseType(2);
-        String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());
-        signDTO.setSortClause(sortClause);
+        //String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());
+        //signDTO.setSortClause(sortClause);
+        signDTO.setSortClause("offer_buy_time desc,sign_time");
+        signDTO.setSort("desc");
         PageInfo<SignVo> signVoPageInfo = signInfoService.selectSignVo(signDTO);
         List<SignVo> list = signVoPageInfo.getList();
         SysUser user = getUser();
@@ -135,8 +143,10 @@ public class SignController extends BaseController {
     @ApiOperation("/导出住宅订购信息表")
     public void exportzhuzhai(ModelMap modelMap,SignDTO signDTO){
         signDTO.setHouseType(1);
-        String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());
-        signDTO.setSortClause(sortClause);
+        //String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());
+        //signDTO.setSortClause(sortClause);
+        signDTO.setSortClause("offer_buy_time desc,sign_time");
+        signDTO.setSort("desc");
         PageInfo<SignVo> signVoPageInfo = signInfoService.selectSignVo(signDTO);
         Project project = projectService.queryById(signDTO.getProjectId());
         Map<String, Object> map = new HashMap<String, Object>();

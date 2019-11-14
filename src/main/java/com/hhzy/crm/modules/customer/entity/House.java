@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -66,6 +67,9 @@ public class House {
      */
     private Integer status;
 
+    @Transient
+    private String statusStr;
+
     /**
      * 房源描述
      */
@@ -75,6 +79,9 @@ public class House {
      * 房源类别 1- 住宅 2-商铺
      */
     private Integer type;
+
+    @Transient
+    private String typeStr;
 
     /**
      * 楼层
@@ -106,6 +113,8 @@ public class House {
     @Column(name = "update_time")
     private Date updateTime;
 
+
+    private String remark;
 
 
 }

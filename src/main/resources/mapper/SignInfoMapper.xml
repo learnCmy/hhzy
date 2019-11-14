@@ -93,35 +93,35 @@
         </if>
         <choose>
             <when test="dateType=='sign'">
-                <if test="startTime!=null">
-                    and a.sign_time <![CDATA[ >= ]]> #{startTime}
+                <if test="signStartTime!=null">
+                    and a.sign_time <![CDATA[ >= ]]> #{signStartTime}
                 </if>
-                <if test="endTime!=null">
-                    and a.sign_time <![CDATA[ <= ]]> #{endTime}
+                <if test="signEndTime!=null">
+                    and a.sign_time <![CDATA[ < ]]> date_add(#{signEndTime},interval 1 day)
                 </if>
             </when>
             <when test="dateType=='offer'">
-                <if test="startTime!=null">
-                    and b.offer_buy_time <![CDATA[ >= ]]>  #{startTime}
+                <if test="signStartTime!=null">
+                    and b.offer_buy_time <![CDATA[ >= ]]>  #{signStartTime}
                 </if>
-                <if test="endTime!=null">
-                    and b.offer_buy_time <![CDATA[ <= ]]> #{endTime}
+                <if test="signEndTime!=null">
+                    and b.offer_buy_time <![CDATA[ < ]]> date_add(#{signEndTime},interval 1 day)
                 </if>
             </when>
             <when test="dateType=='loan'">
-                <if test="startTime!=null">
-                    and a.loan_time <![CDATA[ >= ]]> #{startTime}
+                <if test="signStartTime!=null">
+                    and a.loan_time <![CDATA[ >= ]]> #{signStartTime}
                 </if>
-                <if test="endTime!=null">
-                    and a.loan_time <![CDATA[ <= ]]> #{endTime}
+                <if test="signEndTime!=null">
+                    and a.loan_time <![CDATA[ < ]]> date_add(#{signEndTime},interval 1 day)
                 </if>
             </when>
             <otherwise>
-                <if test="startTime!=null">
-                    and a.create_time <![CDATA[ >= ]]> #{startTime}
+                <if test="signStartTime!=null">
+                    and a.create_time <![CDATA[ >= ]]> #{signStartTime}
                 </if>
-                <if test="endTime!=null">
-                    and a.create_time <![CDATA[ <= ]]> #{endTime}
+                <if test="signEndTime!=null">
+                    and a.create_time <![CDATA[ < ]]> date_add(#{signEndTime},interval 1 day)
                 </if>
             </otherwise>
         </choose>

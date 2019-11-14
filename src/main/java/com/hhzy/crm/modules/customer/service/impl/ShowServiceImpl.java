@@ -134,17 +134,39 @@ public class ShowServiceImpl implements ShowService {
     public Map<String, Object> coutSell(Long projectId) {
         Date date = new Date();
         HashMap<String, Object> map = Maps.newHashMap();
-        BigDecimal bigDecimal = signInfoMapper.sellAmountCount(null, null,projectId);
+        BigDecimal bigDecimal = signInfoMapper.sellAmountCount(null, null,projectId,null);
         map.put("totalAmount",bigDecimal);
 
         Date[] weekStartAndEnd = DateUtils.getWeekStartAndEnd(0);
         Date beginDate = weekStartAndEnd[0];
         Date endDate =weekStartAndEnd[1];
-        BigDecimal weekAmount = signInfoMapper.sellAmountCount(beginDate, endDate,projectId);
+        BigDecimal weekAmount = signInfoMapper.sellAmountCount(beginDate, endDate,projectId,null);
         map.put("weekAmount",weekAmount);
 
-        BigDecimal monthAmount = signInfoMapper.sellAmountCount( DateUtils.getDateFirstDay(date),DateUtils.getDateLastDay(date),projectId);
+        BigDecimal monthAmount = signInfoMapper.sellAmountCount( DateUtils.getDateFirstDay(date),DateUtils.getDateLastDay(date),projectId,null);
         map.put("monthAmount",monthAmount);
+
+        BigDecimal zhuzhaiTotalAmount = signInfoMapper.sellAmountCount(null, null,projectId,1);
+        map.put("zhuzhaiTotalAmount",zhuzhaiTotalAmount);
+
+
+        BigDecimal zhuzhaiWeekAmount = signInfoMapper.sellAmountCount(beginDate, endDate,projectId,1);
+        map.put("zhuzhaiWeekAmount",zhuzhaiWeekAmount);
+
+        BigDecimal zhuzhaiMonthAmount = signInfoMapper.sellAmountCount( DateUtils.getDateFirstDay(date),DateUtils.getDateLastDay(date),projectId,1);
+        map.put("zhuzhaiMonthAmount",zhuzhaiMonthAmount);
+
+
+        BigDecimal shangpuTotalAmount = signInfoMapper.sellAmountCount(null, null,projectId,2);
+        map.put("shangpuTotalAmount",shangpuTotalAmount);
+
+
+        BigDecimal shangpuWeekAmount = signInfoMapper.sellAmountCount(beginDate, endDate,projectId,2);
+        map.put("shangpuWeekAmount",shangpuWeekAmount);
+
+        BigDecimal shangpuMonthAmount = signInfoMapper.sellAmountCount( DateUtils.getDateFirstDay(date),DateUtils.getDateLastDay(date),projectId,2);
+        map.put("shangpuMonthAmount",shangpuMonthAmount);
+
         return map;
     }
 

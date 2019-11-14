@@ -5,6 +5,7 @@ import com.hhzy.crm.common.base.BaseController;
 import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.response.CommonResult;
 import com.hhzy.crm.common.utils.StringHandleUtils;
+import com.hhzy.crm.modules.customer.dao.OfferBuyMapper;
 import com.hhzy.crm.modules.customer.dataobject.dto.OfferBuyDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.UserBatchDTO;
 import com.hhzy.crm.modules.customer.entity.OfferBuy;
@@ -40,6 +41,9 @@ public class OfferBuyController extends BaseController {
 
     @Autowired
     private ShiroService shiroService;
+
+    @Autowired
+    private OfferBuyMapper offerBuyMapper;
 
     @PostMapping("/update/preprice")
     @ApiOperation("修改定金")
@@ -109,7 +113,7 @@ public class OfferBuyController extends BaseController {
     @PostMapping("/update")
     @ApiOperation("更新认购记录")
     public CommonResult update(@RequestBody OfferBuy offerBuy){
-        offerBuyService.update(offerBuy);
+        offerBuyService.updateSelective(offerBuy);
         return CommonResult.success();
     }
 

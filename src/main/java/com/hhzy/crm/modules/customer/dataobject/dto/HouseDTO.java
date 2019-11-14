@@ -54,7 +54,7 @@ public class HouseDTO extends BaseEntity {
     @ApiModelProperty("排序字段")
     private String sortClause = "createTime";
 
-    @ApiModelProperty("排序方式 asc ： 正序， desc ： 倒序")
+     @ApiModelProperty("排序方式 asc ： 正序， desc ： 倒序")
     private String sort = "desc";
 
 }

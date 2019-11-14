@@ -47,10 +47,14 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project> implements Proj
         String workAddressConfig = project.getWorkAddressConfig();
         List<String>  workAddressList = Arrays.asList(workAddressConfig.split(","));
 
+        String bankCategoryConfig = project.getBankCategoryConfig();
+        List<String> bankCategoryList = Arrays.asList(bankCategoryConfig.split(","));
+
         Map<String, Object> map = Maps.newHashMap();
 
         map.put("liveAddressList",liveAddressList);
         map.put("workAddressList",workAddressList);
+        map.put("bankCategoryList",bankCategoryList);
         return map;
     }
 
@@ -59,5 +63,6 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project> implements Proj
         Example example = new Example(Project.class);
         example.createCriteria().andIn("id",ids);
         projectMapper.deleteByExample(example);
+
     }
 }
