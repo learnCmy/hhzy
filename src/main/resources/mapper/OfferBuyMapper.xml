@@ -50,7 +50,7 @@
 
 
   <select id="selectList" resultType="com.hhzy.crm.modules.customer.entity.OfferBuy">
-    select a.*,b.username as user_name,c.name as house_name,c.acreage as acreage,d.id as signId from offer_buy a left join  sys_user b on a.user_id=b.user_id
+    select a.*,b.username as user_name,c.name as house_name,c.acreage as acreage,d.id as signId,d.confirm_info from offer_buy a left join  sys_user b on a.user_id=b.user_id
     left join house c on a.house_id=c.id left join sign_info d on a.id=d.offer_buy_id
     where 1=1
     <if test="offerBuyDTO.projectId!=null">
@@ -80,8 +80,8 @@
       and a.offer_buy_time <![CDATA[ <= ]]> #{offerBuyDTO.offerEndTime}
     </if>
 
-    <if test="offerBuyDTO.showConfirm!=null">
-      and d.confirm=#{offerBuyDTO.showConfirm}
+    <if test="offerBuyDTO.confirmInfo!=null">
+      and d.confirm_info=#{offerBuyDTO.confirmInfo}
    </if>
 
     order by ${offerBuyDTO.sortClause} ${offerBuyDTO.sort}

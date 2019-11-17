@@ -47,7 +47,7 @@ public class SignDTO  extends BaseEntity {
 
     private String bankCategory;
 
-    private Boolean showConfirm;
+    private Boolean confirmInfo;
 
 
     @ApiModelProperty("排序字段")

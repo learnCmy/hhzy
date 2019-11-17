@@ -138,4 +138,7 @@ public class OfferBuy {
      */
     @Transient
     private BigDecimal acreage;
+
+    @Transient
+    private Boolean confirmInfo;
 }

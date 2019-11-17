@@ -63,6 +63,5 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project> implements Proj
         Example example = new Example(Project.class);
         example.createCriteria().andIn("id",ids);
         projectMapper.deleteByExample(example);
-
     }
 }

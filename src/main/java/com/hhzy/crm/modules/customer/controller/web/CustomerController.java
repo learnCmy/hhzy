@@ -110,6 +110,7 @@ public class CustomerController extends BaseController {
 
     @GetMapping("/export")
     @ApiOperation("/来访客户登记导出")
+    @RequiresPermissions("export")
     public void export(ModelMap modelMap, CustomerDTO customerDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(customerDTO.getSortClause());
         customerDTO.setSortClause(sortClause);
@@ -139,6 +140,7 @@ public class CustomerController extends BaseController {
 
     @PostMapping("/delete")
     @ApiOperation("/删除客户信息")
+    @RequiresPermissions("delete")
     public CommonResult delete(@RequestBody List<Long> customerIdList){
         customerService.deleteBatch(customerIdList);
         return CommonResult.success();
@@ -147,6 +149,7 @@ public class CustomerController extends BaseController {
 
     @PostMapping(value = "/import/{projectId}")
     @ApiOperation("导入数据")
+    @RequiresPermissions("export")
     public CommonResult excelImport(@PathVariable(value = "projectId") Long projectId, @RequestParam("file")MultipartFile file){
         //File file1 = new File(getClass().getClassLoader().getResource("excel-template/customerTemplate.xlsx").getFile());
         ImportParams importParams = new ImportParams();
@@ -163,6 +166,7 @@ public class CustomerController extends BaseController {
 
     @GetMapping(value = "/downloadTemplate")
     @ApiOperation("导入模板下载")
+    @RequiresPermissions("export")
     public void download(){
         try (InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("excel-template/customerTemplate.xlsx");
              OutputStream outputStream=response.getOutputStream();

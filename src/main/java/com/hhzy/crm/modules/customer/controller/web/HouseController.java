@@ -20,6 +20,7 @@ import com.hhzy.crm.modules.customer.service.ProjectService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.IOUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -86,6 +87,7 @@ public class HouseController extends BaseController {
 
     @PostMapping("/delete")
     @ApiOperation("删除房屋")
+    @RequiresPermissions("delete")
     public CommonResult delete(@RequestBody List<Long> ids){
         houseService.deleteBatch(ids);
         return CommonResult.success();
@@ -94,6 +96,7 @@ public class HouseController extends BaseController {
 
     @PostMapping(value = "/import/{projectId}/{type}")
     @ApiOperation("导入房屋数据")
+    @RequiresPermissions("export")
     public CommonResult excelImport(@PathVariable(value = "projectId") Long projectId,@PathVariable(value ="type")Integer type, @RequestParam("file")MultipartFile file){
         ImportParams importParams = new ImportParams();
         importParams.setTitleRows(1);
@@ -112,6 +115,7 @@ public class HouseController extends BaseController {
 
     @GetMapping(value = "/downloadTemplate/{type}")
     @ApiOperation("导入模板下载 type 1 为住宅 2 为商铺")
+    @RequiresPermissions("export")
     public void download(@PathVariable Integer type){
         try (
                 InputStream zhuzhaiStream =    getClass().getClassLoader().getResourceAsStream("excel-template/zhuzhaiTemplate.xlsx");
@@ -138,6 +142,7 @@ public class HouseController extends BaseController {
 
     @GetMapping("/export")
     @ApiOperation("房屋导出")
+    @RequiresPermissions("export")
     public void export(ModelMap modelMap, HouseDTO houseDTO){
         houseDTO.setSortClause("type,name,build_no,floor_level,room_no");
         houseDTO.setSort("asc");

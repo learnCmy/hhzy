@@ -2,7 +2,8 @@ package com.hhzy.crm.modules.customer.entity;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
 
 @Data
 public class Project {

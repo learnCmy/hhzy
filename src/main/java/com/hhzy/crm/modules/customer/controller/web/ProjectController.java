@@ -6,6 +6,7 @@ import com.hhzy.crm.modules.customer.entity.Project;
 import com.hhzy.crm.modules.customer.service.ProjectService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,6 +63,7 @@ public class ProjectController extends BaseController {
 
     @PostMapping("/delete")
     @ApiOperation("删除项目")
+    @RequiresPermissions("delete")
     public CommonResult delete(@RequestBody List<Long> projectIdList){
         projectService.deleteBatch(projectIdList);
         return CommonResult.success();

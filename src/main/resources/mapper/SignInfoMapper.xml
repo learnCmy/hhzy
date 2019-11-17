@@ -91,6 +91,9 @@
         <if test="bankCategory!=null and bankCategory!=''">
             and a.bank_category=#{bankCategory}
         </if>
+        <if test="confirmInfo!=null">
+            and a.confirm_info=#{confirmInfo}
+        </if>
         <choose>
             <when test="dateType=='sign'">
                 <if test="signStartTime!=null">

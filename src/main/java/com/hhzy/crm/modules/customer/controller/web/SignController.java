@@ -92,7 +92,7 @@ public class SignController extends BaseController {
 
     @PostMapping("/delete")
     @ApiOperation("删除签约信息")
-    @RequiresPermissions("sign")
+    @RequiresPermissions("delete")
     public CommonResult delete(@RequestBody List<Long> signIdList){
         signInfoService.deleteBatch(signIdList);
         return CommonResult.success();
@@ -112,6 +112,7 @@ public class SignController extends BaseController {
 
     @GetMapping("/export/shop")
     @ApiOperation("/导出商铺订购信息表")
+    @RequiresPermissions("export")
     public void exportshangpu(ModelMap modelMap,SignDTO signDTO){
         signDTO.setHouseType(2);
         //String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());
@@ -141,6 +142,7 @@ public class SignController extends BaseController {
 
     @GetMapping("/export")
     @ApiOperation("/导出住宅订购信息表")
+    @RequiresPermissions("export")
     public void exportzhuzhai(ModelMap modelMap,SignDTO signDTO){
         signDTO.setHouseType(1);
         //String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());

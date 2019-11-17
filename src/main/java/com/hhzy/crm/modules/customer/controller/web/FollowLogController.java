@@ -104,6 +104,7 @@ public class FollowLogController extends BaseController {
 
     @PostMapping("/delete")
     @ApiOperation("删除跟进信息")
+    @RequiresPermissions("delete")
     public CommonResult delete(@RequestBody List<Long> followIdLogList){
         followLogService.deleteBatch(followIdLogList);
         return CommonResult.success();
@@ -111,7 +112,8 @@ public class FollowLogController extends BaseController {
 
 
     @GetMapping("/export")
-    @ApiOperation("认筹导出")
+    @ApiOperation("跟进导出")
+    @RequiresPermissions("export")
     public void export(ModelMap modelMap, FollowLogDTO followLogDTO ){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(followLogDTO.getSortClause());
         followLogDTO.setSortClause(sortClause);

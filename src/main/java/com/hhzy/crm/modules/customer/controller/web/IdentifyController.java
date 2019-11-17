@@ -130,6 +130,7 @@ public class IdentifyController extends BaseController {
 
     @GetMapping("/export")
     @ApiOperation("认筹导出")
+    @RequiresPermissions("export")
     public void export(ModelMap modelMap,IdentifyDTO identifyDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(identifyDTO.getSortClause());
         identifyDTO.setSortClause(sortClause);
@@ -163,6 +164,7 @@ public class IdentifyController extends BaseController {
 
     @PostMapping("/delete")
     @ApiOperation("删除认筹信息")
+    @RequiresPermissions("delete")
     public CommonResult delete(@RequestBody List<Long> identityLogIdList){
         identifyService.deleteBatch(identityLogIdList);
         return CommonResult.success();
@@ -179,6 +181,7 @@ public class IdentifyController extends BaseController {
 
     @PostMapping(value = "/import/{projectId}")
     @ApiOperation("导入数据")
+    @RequiresPermissions("export")
     public CommonResult excelImport(@PathVariable(value = "projectId") Long projectId, @RequestParam("file")MultipartFile file){
         ImportParams importParams = new ImportParams();
         importParams.setTitleRows(1);

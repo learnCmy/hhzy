@@ -119,6 +119,7 @@ public class OfferBuyController extends BaseController {
 
     @PostMapping("/delete")
     @ApiOperation("删除认购信息")
+    @RequiresPermissions("delete")
     public CommonResult delete(@RequestBody List<Long> offBuyIdList){
         offerBuyService.deleteBatchForWeb(offBuyIdList);
         return CommonResult.success();

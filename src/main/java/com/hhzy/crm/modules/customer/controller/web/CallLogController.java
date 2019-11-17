@@ -100,6 +100,7 @@ public class CallLogController  extends BaseController {
 
     @GetMapping("/export")
     @ApiOperation("/导出来电")
+    @RequiresPermissions("export")
     public void export(ModelMap modelMap, CallLogDTO callLogDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(callLogDTO.getSortClause());
         callLogDTO.setSortClause(sortClause);
@@ -128,6 +129,7 @@ public class CallLogController  extends BaseController {
 
     @PostMapping("/delete")
     @ApiOperation("/删除来电登记")
+    @RequiresPermissions("delete")
     public CommonResult delete(@RequestBody List<Long> callLogIdList){
         callLogService.deleteBatch(callLogIdList);
         return CommonResult.success();

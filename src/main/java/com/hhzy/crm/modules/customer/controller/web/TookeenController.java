@@ -72,6 +72,7 @@ public class TookeenController extends BaseController {
 
     @PostMapping("/delete")
     @ApiOperation("删除认筹信息")
+    @RequiresPermissions("delete")
     public CommonResult delete(@RequestBody List<Long> ids){
         tookeenService.deleteBatch(ids);
         return CommonResult.success();
