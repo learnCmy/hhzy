@@ -1,10 +1,10 @@
 package com.hhzy.crm.modules.customer.service.impl;
 
-import cn.afterturn.easypoi.excel.ExcelXorHtmlUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hhzy.crm.common.base.BaseServiceImpl;
 import com.hhzy.crm.common.exception.BusinessException;
+import com.hhzy.crm.common.utils.MobileUtils;
 import com.hhzy.crm.modules.customer.dao.TookeenMapper;
 import com.hhzy.crm.modules.customer.dataobject.dto.TookeenDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.UserBatchDTO;
@@ -51,9 +51,8 @@ public class TookeenServiceImpl extends BaseServiceImpl<Tookeen> implements Took
     public void saveBasicTookeen(Tookeen tookeen) {
         String mobile = tookeen.getMobile();
         Long projectId = tookeen.getProjectId();
-        if (StringUtils.isEmpty(mobile)){
-            throw  new BusinessException("请填写手机号");
-        }
+        mobile = MobileUtils.getMobile(mobile);
+        tookeen.setMobile(mobile);
         if(projectId== null){
             throw new BusinessException("项目Id不能为空,请联系管理员");
         }

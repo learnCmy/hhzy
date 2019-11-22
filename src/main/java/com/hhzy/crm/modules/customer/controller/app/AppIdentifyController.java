@@ -6,6 +6,7 @@ import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.enums.IdentifySellStatusEnum;
 import com.hhzy.crm.common.exception.BusinessException;
 import com.hhzy.crm.common.response.CommonResult;
+import com.hhzy.crm.common.utils.MobileUtils;
 import com.hhzy.crm.modules.customer.entity.IdentifyLog;
 import com.hhzy.crm.modules.customer.service.IdentifyService;
 import com.hhzy.crm.modules.sys.service.ShiroService;
@@ -44,6 +45,8 @@ public class AppIdentifyController extends BaseController {
             throw  new BusinessException("项目Id不能为空");
         }
         Long userId = getUserId();
+        String mobile = MobileUtils.getMobile(identifyLog.getMobile());
+        identifyLog.setMobile(mobile);
         identifyLog.setUserId(userId);
         identifyLog.setSellStatus(IdentifySellStatusEnum.BUYCARD.getCode());
         identifyService.save(identifyLog);

@@ -3,16 +3,14 @@ package com.hhzy.crm.modules.customer.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hhzy.crm.common.exception.BusinessException;
-import com.hhzy.crm.modules.customer.dao.CustomerMapper;
+import com.hhzy.crm.common.utils.MobileUtils;
 import com.hhzy.crm.modules.customer.dao.FollowLogMapper;
 import com.hhzy.crm.modules.customer.dataobject.dto.FollowLogDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.UserBatchDTO;
-import com.hhzy.crm.modules.customer.entity.Customer;
 import com.hhzy.crm.modules.customer.entity.FollowLog;
 import com.hhzy.crm.modules.customer.service.FollowLogService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.xmlbeans.impl.schema.BuiltinSchemaTypeSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +34,8 @@ public class FollowLogServiceImpl implements FollowLogService {
 
     @Override
     public void save(FollowLog followLog) {
+        String mobile = MobileUtils.getMobile(followLog.getMobile());
+        followLog.setMobile(mobile);
         followLog.setCreateTime(new Date());
         followLog.setUpdateTime(new Date());
         followLogMapper.insertSelective(followLog);
@@ -43,6 +43,8 @@ public class FollowLogServiceImpl implements FollowLogService {
 
     @Override
     public void update(FollowLog followLog) {
+        String mobile = MobileUtils.getMobile(followLog.getMobile());
+        followLog.setMobile(mobile);
         followLog.setCreateTime(new Date());
         followLog.setUpdateTime(new Date());
         followLogMapper.updateByPrimaryKeySelective(followLog);

@@ -28,8 +28,12 @@ public class FileUtilTest {
         String s = new DateTime(parse).toString("yyyy-MM-dd");
         System.out.println(s);*/
 
-        String phone="18724605668";
-        String regex = "^((1[0-9][0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
+        String phone="1872460566 8";
+        String trim = phone.trim();
+        trim.replace(" ", "");
+        System.out.println(trim);
+        System.out.println(trim.length());
+        String regex = "^[-+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(phone);
         boolean isMatch = m.matches();

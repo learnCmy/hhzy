@@ -3,6 +3,7 @@ package com.hhzy.crm.modules.customer.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hhzy.crm.common.exception.BusinessException;
+import com.hhzy.crm.common.utils.MobileUtils;
 import com.hhzy.crm.modules.customer.dao.CallLogMapper;
 import com.hhzy.crm.modules.customer.dataobject.dto.CallLogDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.UserBatchDTO;
@@ -58,6 +59,7 @@ public class CallLogServiceImpl implements CallLogService {
      * @param callLogId
      */
     private void saveCheck(String mobile,Long projectId,Long callLogId){
+        mobile = MobileUtils.getMobile(mobile);
         List<Customer> list = customerService.selectCustomerByMobile(mobile,projectId);
         if (CollectionUtils.isNotEmpty(list)){
             String userName = sysUserService.getUserName(list.get(0).getUserId());

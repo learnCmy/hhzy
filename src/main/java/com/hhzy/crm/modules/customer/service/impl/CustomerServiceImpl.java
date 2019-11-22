@@ -9,6 +9,7 @@ import com.hhzy.crm.common.enums.SourceWayEnum;
 import com.hhzy.crm.common.exception.BusinessException;
 import com.hhzy.crm.common.utils.DateUtils;
 import com.hhzy.crm.common.utils.EnumUtil;
+import com.hhzy.crm.common.utils.MobileUtils;
 import com.hhzy.crm.modules.customer.dao.CustomerMapper;
 import com.hhzy.crm.modules.customer.dataobject.dto.CustomerDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.UserBatchDTO;
@@ -54,9 +55,9 @@ public class CustomerServiceImpl extends BaseServiceImpl<Customer> implements Cu
 
     @Override
     public void saveBasicCustomer(Customer customer) {
-        if (StringUtils.isEmpty(customer.getMobile())){
-            throw  new BusinessException("手机号不能为空");
-        }
+        String mobile = MobileUtils.getMobile(customer.getMobile());
+        customer.setMobile(mobile);
+        customer.setComingTime(new Date());
         Example example = new Example(Customer.class);
         example.createCriteria().andEqualTo("mobile",customer.getMobile())
                                 .andEqualTo("projectId",customer.getProjectId());
@@ -70,9 +71,8 @@ public class CustomerServiceImpl extends BaseServiceImpl<Customer> implements Cu
 
     @Override
     public void updateBasicCustomer(Customer customer) {
-        if (StringUtils.isEmpty(customer.getMobile())){
-            throw  new BusinessException("手机号不能为空");
-        }
+        String mobile = MobileUtils.getMobile(customer.getMobile());
+        customer.setMobile(mobile);
         Example example = new Example(Customer.class);
         example.createCriteria().andEqualTo("mobile",customer.getMobile())
                                 .andEqualTo("projectId",customer.getProjectId())
