@@ -6,6 +6,7 @@ import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.view.PoiBaseView;
 import com.github.pagehelper.PageInfo;
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
 import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.enums.IdentifySellStatusEnum;
@@ -32,7 +33,10 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @Auther: cmy
@@ -55,7 +59,7 @@ public class IdentifyController extends BaseController {
 
     @PostMapping("/list")
     @ApiOperation("认筹记录列表")
-    @RequiresPermissions("identify")
+    @RequiresPermissions("identifyselect")
     public CommonResult list(@RequestBody IdentifyDTO identifyDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(identifyDTO.getSortClause());
         identifyDTO.setSortClause(sortClause);
@@ -97,7 +101,8 @@ public class IdentifyController extends BaseController {
 
     @PostMapping("/update")
     @ApiOperation("更新认筹记录")
-    @RequiresPermissions("identify")
+    @RequiresPermissions("identifyupdate")
+    @DataLog(value = "更新认筹记录",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult update(@RequestBody IdentifyLog identifyLog){
         if (identifyLog.getProjectId()==null){
             throw  new BusinessException("项目Id不能为空");
@@ -108,6 +113,7 @@ public class IdentifyController extends BaseController {
 
     @PostMapping("/update/refundDate")
     @ApiOperation("更新退卡日期")
+    @DataLog(value = "认筹更新退卡日期",actionType =CrmConstant.ActionType.UPDATE)
     public  CommonResult updateRefundDate(@RequestBody RefundDateDTO refundDateDTO){
         IdentifyLog identifyLog = new IdentifyLog();
         identifyLog.setProjectId(refundDateDTO.getProjectId());
@@ -131,9 +137,12 @@ public class IdentifyController extends BaseController {
     @GetMapping("/export")
     @ApiOperation("认筹导出")
     @RequiresPermissions("export")
+    @DataLog(value = "认筹数据导出",actionType =CrmConstant.ActionType.EXPORT)
     public void export(ModelMap modelMap,IdentifyDTO identifyDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(identifyDTO.getSortClause());
         identifyDTO.setSortClause(sortClause);
+        identifyDTO.setPage(null);
+        identifyDTO.setPageSize(null);
         PageInfo<IdentifyLog> identifyLogPageInfo = identifyService.selectList(identifyDTO);
         SysUser user = getUser();
         Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
@@ -165,6 +174,7 @@ public class IdentifyController extends BaseController {
     @PostMapping("/delete")
     @ApiOperation("删除认筹信息")
     @RequiresPermissions("delete")
+    @DataLog(value = "认筹数据删除",actionType =CrmConstant.ActionType.DELETE)
     public CommonResult delete(@RequestBody List<Long> identityLogIdList){
         identifyService.deleteBatch(identityLogIdList);
         return CommonResult.success();
@@ -173,6 +183,8 @@ public class IdentifyController extends BaseController {
 
     @PostMapping("/updateSellstatus")
     @ApiOperation("修改认筹买售状态")
+    @RequiresPermissions("identifysellstatus")
+    @DataLog(value = "修改认筹售卖状态",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult updateSellStatus(Long id,Integer sellStatus){
         identifyService.updateSellStatus(id,sellStatus);
         return  CommonResult.success();
@@ -182,6 +194,7 @@ public class IdentifyController extends BaseController {
     @PostMapping(value = "/import/{projectId}")
     @ApiOperation("导入数据")
     @RequiresPermissions("export")
+    @DataLog(value = "认筹数据导入",actionType =CrmConstant.ActionType.IMPORT)
     public CommonResult excelImport(@PathVariable(value = "projectId") Long projectId, @RequestParam("file")MultipartFile file){
         ImportParams importParams = new ImportParams();
         importParams.setTitleRows(1);

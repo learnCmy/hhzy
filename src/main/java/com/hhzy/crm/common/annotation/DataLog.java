@@ -12,7 +12,11 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface SysLog {
+public @interface DataLog {
 
 	String value() default "";
+
+	String actionType() default "";
+
+	String client() default "1";
 }

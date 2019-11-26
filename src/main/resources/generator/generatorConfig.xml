@@ -19,17 +19,17 @@
         </jdbcConnection>
 
         <!-- 对于生成的pojo所在包 -->
-        <javaModelGenerator targetPackage="com.hhzy.crm.modules.customer.entity" targetProject="C:\Users\cmy41\Desktop\hhzy\hhzy_crm\src\main\java"/>
+        <javaModelGenerator targetPackage="com.hhzy.crm.modules.sys.entity" targetProject="C:\Users\cmy41\Desktop\hhzy\hhzy_crm\src\main\java"/>
 
         <!-- 对于生成的mapper所在目录 -->
         <sqlMapGenerator targetPackage="mapper" targetProject="C:\Users\cmy41\Desktop\hhzy\hhzy_crm\src\main\resources"/>
 
         <!-- 配置mapper对应的java映射 -->
-        <javaClientGenerator targetPackage="com.hhzy.crm.modules.customer.dao" targetProject="C:\Users\cmy41\Desktop\hhzy\hhzy_crm\src\main\java"
+        <javaClientGenerator targetPackage="com.hhzy.crm.modules.sys.dao" targetProject="C:\Users\cmy41\Desktop\hhzy\hhzy_crm\src\main\java"
                              type="XMLMAPPER"/>
 
 
-        <table tableName="tookeen"></table>
+        <table tableName="sys_log"></table>
 
 
     </context>

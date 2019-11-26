@@ -6,7 +6,9 @@ import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.view.PoiBaseView;
 import com.github.pagehelper.PageInfo;
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
+import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.enums.HouseStatusEnum;
 import com.hhzy.crm.common.response.CommonResult;
 import com.hhzy.crm.common.utils.EnumUtil;
@@ -46,6 +48,7 @@ public class HouseController extends BaseController {
 
     @PostMapping("/save")
     @ApiOperation("新增房屋信息")
+    @RequiresPermissions(value = "housesave")
     public CommonResult save(@RequestBody House house){
         houseService.save(house);
         return CommonResult.success();
@@ -54,6 +57,8 @@ public class HouseController extends BaseController {
 
     @PostMapping("/update")
     @ApiOperation("更新房屋信息")
+    @RequiresPermissions(value = "houseupdate")
+    @DataLog(value = "更新房屋信息",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult update(@RequestBody House house){
         houseService.update(house);
         return CommonResult.success();
@@ -62,6 +67,7 @@ public class HouseController extends BaseController {
 
     @PostMapping("/update/status")
     @ApiOperation("更新房屋售卖状态")
+    @DataLog(value = "更新房屋售卖状态",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult update(Long houseId,Integer status){
         houseService.updateStatus(houseId,status);
         return CommonResult.success();
@@ -88,6 +94,7 @@ public class HouseController extends BaseController {
     @PostMapping("/delete")
     @ApiOperation("删除房屋")
     @RequiresPermissions("delete")
+    @DataLog(value = "删除房屋",actionType =CrmConstant.ActionType.DELETE)
     public CommonResult delete(@RequestBody List<Long> ids){
         houseService.deleteBatch(ids);
         return CommonResult.success();
@@ -97,6 +104,7 @@ public class HouseController extends BaseController {
     @PostMapping(value = "/import/{projectId}/{type}")
     @ApiOperation("导入房屋数据")
     @RequiresPermissions("export")
+    @DataLog(value = "导入房屋数据",actionType =CrmConstant.ActionType.IMPORT)
     public CommonResult excelImport(@PathVariable(value = "projectId") Long projectId,@PathVariable(value ="type")Integer type, @RequestParam("file")MultipartFile file){
         ImportParams importParams = new ImportParams();
         importParams.setTitleRows(1);
@@ -116,6 +124,7 @@ public class HouseController extends BaseController {
     @GetMapping(value = "/downloadTemplate/{type}")
     @ApiOperation("导入模板下载 type 1 为住宅 2 为商铺")
     @RequiresPermissions("export")
+    @DataLog(value = "(网页)房屋模板下载",actionType =CrmConstant.ActionType.EXPORT)
     public void download(@PathVariable Integer type){
         try (
                 InputStream zhuzhaiStream =    getClass().getClassLoader().getResourceAsStream("excel-template/zhuzhaiTemplate.xlsx");
@@ -143,9 +152,12 @@ public class HouseController extends BaseController {
     @GetMapping("/export")
     @ApiOperation("房屋导出")
     @RequiresPermissions("export")
-    public void export(ModelMap modelMap, HouseDTO houseDTO){
+    @DataLog(value = "房屋数据导出",actionType =CrmConstant.ActionType.EXPORT)
+    public void export(HouseDTO houseDTO,ModelMap modelMap){
         houseDTO.setSortClause("type,name,build_no,floor_level,room_no");
         houseDTO.setSort("asc");
+        houseDTO.setPage(null);
+        houseDTO.setPageSize(null);
         PageInfo<House> housePageInfo = houseService.selectHouse(houseDTO);
         List<House> list = housePageInfo.getList();
         for (House house : list) {

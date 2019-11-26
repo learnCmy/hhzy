@@ -220,9 +220,17 @@ public class OfferBuyServiceImpl extends BaseServiceImpl<OfferBuy> implements Of
         int unCheckedCount = offerBuyMapper.countNumberByStatus(projectId, OfferBuyStatusEnum.UNCHECKED.getCode());
         int checkedCount = offerBuyMapper.countNumberByStatus(projectId, OfferBuyStatusEnum.CHECKED.getCode());
         int rejectCount = offerBuyMapper.countNumberByStatus(projectId, OfferBuyStatusEnum.REJECT.getCode());
+        //放款几组
+        int loanNumberNumber=offerBuyMapper.countLoanNumber(projectId);
+        //签约几组
+        int signNumber = offerBuyMapper.countSignNumber(projectId);
+
         map.put("unCheckedNum",unCheckedCount);
         map.put("checkedNum",checkedCount);
         map.put("rejectNum",rejectCount);
+        map.put("loanNum",loanNumberNumber);
+        map.put("signNumber",signNumber);
+
         return map;
     }
 }

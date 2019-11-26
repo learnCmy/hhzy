@@ -168,7 +168,8 @@ public class Customer {
     @Column(name = "update_time")
     private Date updateTime;
 
-
+    @Column(name = "delete_by")
+    private Long deleteBy;
 
     @Transient
     private Long followId;

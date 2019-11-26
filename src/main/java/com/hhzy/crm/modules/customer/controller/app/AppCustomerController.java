@@ -1,6 +1,7 @@
 package com.hhzy.crm.modules.customer.controller.app;
 
 import com.github.pagehelper.PageInfo;
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
 import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.response.CommonResult;
@@ -79,6 +80,7 @@ public class AppCustomerController extends BaseController {
 
     @PostMapping("/delete")
     @ApiOperation("/删除客户信息(软删除 是把userId 置为空)")
+    @DataLog(value = "来访记录删除",actionType =CrmConstant.ActionType.DELETE,client = CrmConstant.Client.APP)
     public CommonResult delete(@RequestBody List<Long> customerIdList){
         customerService.removeUserId(customerIdList);
         return CommonResult.success();

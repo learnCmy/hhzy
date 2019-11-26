@@ -1,6 +1,7 @@
 package com.hhzy.crm.modules.customer.controller.web;
 
 import com.github.pagehelper.PageInfo;
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
 import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.response.CommonResult;
@@ -15,6 +16,7 @@ import com.hhzy.crm.modules.sys.entity.SysUser;
 import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +49,8 @@ public class OfferBuyController extends BaseController {
 
     @PostMapping("/update/preprice")
     @ApiOperation("修改定金")
+    @RequiresPermissions(value = {"buyprice","check"},logical = Logical.OR)
+    @DataLog(value = "认购记录修改定价",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult updatePrePrice(@RequestBody OfferBuy offerBuy){
         offerBuyService.updatePrePrice(offerBuy);
         return CommonResult.success();
@@ -62,6 +66,7 @@ public class OfferBuyController extends BaseController {
 
     @PostMapping("/list")
     @ApiOperation("认购用户信息查询")
+    @RequiresPermissions("buyselect")
     public CommonResult  select(@RequestBody OfferBuyDTO offerBuyDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(offerBuyDTO.getSortClause());
         offerBuyDTO.setSortClause(sortClause);
@@ -86,6 +91,7 @@ public class OfferBuyController extends BaseController {
     @PostMapping("/update/status")
     @ApiOperation("修改审核状态")
     @RequiresPermissions("check")
+    @DataLog(value = "认购记录修改审核状态",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult updateStatus(Long id,Integer status,String refuseRemark){
         offerBuyService.updateStatus(id,status,refuseRemark);
         return CommonResult.success();
@@ -95,6 +101,7 @@ public class OfferBuyController extends BaseController {
     @PostMapping("/update/user")
     @ApiOperation("修改置业顾问")
     @RequiresPermissions("updateuser")
+    @DataLog(value = "认购记录修改置业顾问",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult updateUser(Long id, Long userId){
         offerBuyService.updateUser(id,userId);
         return  CommonResult.success();
@@ -104,7 +111,8 @@ public class OfferBuyController extends BaseController {
     @PostMapping("/update/user/batch")
     @ApiOperation("批量修改置业顾问")
     @RequiresPermissions("updateuser")
-    public CommonResult updateUSer(@RequestBody UserBatchDTO userBatchDTO){
+    @DataLog(value = "认购记录批量修改置业顾问",actionType =CrmConstant.ActionType.UPDATE)
+    public CommonResult updateUserBatch(@RequestBody UserBatchDTO userBatchDTO){
         offerBuyService.updateUserBatch(userBatchDTO);
         return CommonResult.success();
     }
@@ -112,6 +120,8 @@ public class OfferBuyController extends BaseController {
 
     @PostMapping("/update")
     @ApiOperation("更新认购记录")
+    @RequiresPermissions(value="buy:update")
+    @DataLog(value = "更新认购记录",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult update(@RequestBody OfferBuy offerBuy){
         offerBuyService.updateSelective(offerBuy);
         return CommonResult.success();
@@ -120,6 +130,7 @@ public class OfferBuyController extends BaseController {
     @PostMapping("/delete")
     @ApiOperation("删除认购信息")
     @RequiresPermissions("delete")
+    @DataLog(value = "删除认购记录",actionType =CrmConstant.ActionType.DELETE)
     public CommonResult delete(@RequestBody List<Long> offBuyIdList){
         offerBuyService.deleteBatchForWeb(offBuyIdList);
         return CommonResult.success();

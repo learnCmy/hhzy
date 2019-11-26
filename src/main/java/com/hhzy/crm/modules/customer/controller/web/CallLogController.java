@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.entity.vo.TemplateExcelConstants;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.view.PoiBaseView;
 import com.github.pagehelper.PageInfo;
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
 import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.enums.SourceWayEnum;
@@ -49,6 +50,7 @@ public class CallLogController  extends BaseController {
 
     @PostMapping("list")
     @ApiOperation("来电登记列表")
+    @RequiresPermissions(value = "callselect")
     public CommonResult list(@RequestBody CallLogDTO callLogDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(callLogDTO.getSortClause());
         callLogDTO.setSortClause(sortClause);
@@ -82,6 +84,7 @@ public class CallLogController  extends BaseController {
 
     @PostMapping("/update")
     @ApiOperation("更新来电登记")
+    @RequiresPermissions("callupdate")
     public CommonResult updateCall(@RequestBody CallLog callLog){
         if (callLog.getProjectId()==null){
             throw  new BusinessException("房源项目Id不存在");
@@ -101,9 +104,12 @@ public class CallLogController  extends BaseController {
     @GetMapping("/export")
     @ApiOperation("/导出来电")
     @RequiresPermissions("export")
-    public void export(ModelMap modelMap, CallLogDTO callLogDTO){
+    @DataLog(value = "(网页)来电登记导出",actionType =CrmConstant.ActionType.EXPORT)
+    public void export(CallLogDTO callLogDTO,ModelMap modelMap){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(callLogDTO.getSortClause());
         callLogDTO.setSortClause(sortClause);
+        callLogDTO.setPage(null);
+        callLogDTO.setPageSize(null);
         PageInfo<CallLog> callLogPageInfo = callLogService.selectList(callLogDTO);
         List<CallLog> list = callLogPageInfo.getList();
         for (int i = 0; i <list.size() ; i++) {
@@ -130,6 +136,7 @@ public class CallLogController  extends BaseController {
     @PostMapping("/delete")
     @ApiOperation("/删除来电登记")
     @RequiresPermissions("delete")
+    @DataLog(value = "(网页)来电登记删除",actionType =CrmConstant.ActionType.DELETE)
     public CommonResult delete(@RequestBody List<Long> callLogIdList){
         callLogService.deleteBatch(callLogIdList);
         return CommonResult.success();

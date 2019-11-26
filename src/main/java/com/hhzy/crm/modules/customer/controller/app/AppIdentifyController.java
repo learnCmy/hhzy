@@ -1,6 +1,7 @@
 package com.hhzy.crm.modules.customer.controller.app;
 
 import com.github.pagehelper.PageInfo;
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
 import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.enums.IdentifySellStatusEnum;
@@ -90,6 +91,7 @@ public class AppIdentifyController extends BaseController {
 
     @PostMapping("/delete")
     @ApiOperation("删除认筹信息(软删除 是把userId 置为空)")
+    @DataLog(value = "(小程序)认筹删除",actionType =CrmConstant.ActionType.DELETE,client = CrmConstant.Client.APP)
     public CommonResult delete(@RequestBody List<Long> identityLogIdList){
         identifyService.removeUserId(identityLogIdList);
         return CommonResult.success();

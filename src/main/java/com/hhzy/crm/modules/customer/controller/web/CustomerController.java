@@ -6,6 +6,7 @@ import cn.afterturn.easypoi.excel.entity.ImportParams;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.view.PoiBaseView;
 import com.github.pagehelper.PageInfo;
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
 import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.enums.SourceWayEnum;
@@ -54,7 +55,7 @@ public class CustomerController extends BaseController {
 
     @PostMapping("/list")
     @ApiOperation("查询所有客户信息")
-    @RequiresPermissions("customer")
+    @RequiresPermissions("customerselect")
     public CommonResult list(@RequestBody CustomerDTO customerDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(customerDTO.getSortClause());
         customerDTO.setSortClause(sortClause);
@@ -71,6 +72,7 @@ public class CustomerController extends BaseController {
     @GetMapping("/update/user")
     @ApiOperation("修改职业顾问")
     @RequiresPermissions("updateuser")
+    @DataLog(value = "(网页)来访客户修改置业顾问",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult list(Long customerId,Long userId){
         customerService.updateCustomerUser(customerId,userId);
         return  CommonResult.success();
@@ -81,6 +83,7 @@ public class CustomerController extends BaseController {
     @PostMapping("/update/user/batch")
     @ApiOperation("批量修改置业顾问")
     @RequiresPermissions("updateuser")
+    @DataLog(value = "(网页)来访客户批量修改置业顾问",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult updateUSer(@RequestBody UserBatchDTO userBatchDTO){
         customerService.updateUserBatch(userBatchDTO);
         return CommonResult.success();
@@ -90,7 +93,8 @@ public class CustomerController extends BaseController {
 
     @PostMapping("/update")
     @ApiOperation("更新客户信息")
-    @RequiresPermissions("customer")
+    @RequiresPermissions("customerupdate")
+    @DataLog(value = "来访客户更新",actionType =CrmConstant.ActionType.UPDATE)
     public  CommonResult updateCustomer(@RequestBody Customer customer){
         customerService.updateBasicCustomer(customer);
         return CommonResult.success();
@@ -99,7 +103,6 @@ public class CustomerController extends BaseController {
 
     @PostMapping("/info/{customerId}")
     @ApiOperation("用户详细信息")
-    @RequiresPermissions("customer")
     public CommonResult info(@PathVariable Long customerId){
         Customer customer = customerService.selectCusomerInfo(customerId);
         return CommonResult.success(customer);
@@ -111,9 +114,12 @@ public class CustomerController extends BaseController {
     @GetMapping("/export")
     @ApiOperation("/来访客户登记导出")
     @RequiresPermissions("export")
-    public void export(ModelMap modelMap, CustomerDTO customerDTO){
+    @DataLog(value = "来访客户导出",actionType =CrmConstant.ActionType.EXPORT)
+    public void export(CustomerDTO customerDTO,ModelMap modelMap){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(customerDTO.getSortClause());
         customerDTO.setSortClause(sortClause);
+        customerDTO.setPage(null);
+        customerDTO.setPageSize(null);
         PageInfo<Customer> customerPageInfo = customerService.selectAllCustomer(customerDTO);
         List<Customer> list = customerPageInfo.getList();
         SysUser user = getUser();
@@ -141,6 +147,7 @@ public class CustomerController extends BaseController {
     @PostMapping("/delete")
     @ApiOperation("/删除客户信息")
     @RequiresPermissions("delete")
+    @DataLog(value = "来访删除",actionType =CrmConstant.ActionType.EXPORT)
     public CommonResult delete(@RequestBody List<Long> customerIdList){
         customerService.deleteBatch(customerIdList);
         return CommonResult.success();
@@ -150,6 +157,7 @@ public class CustomerController extends BaseController {
     @PostMapping(value = "/import/{projectId}")
     @ApiOperation("导入数据")
     @RequiresPermissions("export")
+    @DataLog(value = "来访导入数据",actionType =CrmConstant.ActionType.IMPORT)
     public CommonResult excelImport(@PathVariable(value = "projectId") Long projectId, @RequestParam("file")MultipartFile file){
         //File file1 = new File(getClass().getClassLoader().getResource("excel-template/customerTemplate.xlsx").getFile());
         ImportParams importParams = new ImportParams();
@@ -167,6 +175,7 @@ public class CustomerController extends BaseController {
     @GetMapping(value = "/downloadTemplate")
     @ApiOperation("导入模板下载")
     @RequiresPermissions("export")
+    @DataLog(value = "来访导入模板下载",actionType =CrmConstant.ActionType.EXPORT)
     public void download(){
         try (InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("excel-template/customerTemplate.xlsx");
              OutputStream outputStream=response.getOutputStream();

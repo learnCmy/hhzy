@@ -87,6 +87,15 @@ public class SignInfoServiceImpl extends BaseServiceImpl<SignInfo> implements Si
     }
 
     @Override
+    public PageInfo<SignVo> selectSignVoExport(SignDTO signDTO) {
+        if (signDTO.getPage()!=null&&signDTO.getPageSize()!=null){
+            PageHelper.startPage(signDTO.getPage(),signDTO.getPageSize());
+        }
+        List<SignVo> signVos = signInfoMapper.selectSignVoExport(signDTO);
+        return new PageInfo<>(signVos);
+    }
+
+    @Override
     public PageInfo<SignVo> selectSignVo(SignDTO signDTO) {
         if (signDTO.getPage()!=null&&signDTO.getPageSize()!=null){
             PageHelper.startPage(signDTO.getPage(),signDTO.getPageSize());

@@ -4,8 +4,6 @@ import cn.afterturn.easypoi.util.PoiPublicUtil;
 
 import java.net.URISyntaxException;
 import java.text.ParseException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class FileUtilTest {
 
@@ -28,7 +26,7 @@ public class FileUtilTest {
         String s = new DateTime(parse).toString("yyyy-MM-dd");
         System.out.println(s);*/
 
-        String phone="1872460566 8";
+        /*String phone="1872460566 8";
         String trim = phone.trim();
         trim.replace(" ", "");
         System.out.println(trim);
@@ -37,12 +35,12 @@ public class FileUtilTest {
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(phone);
         boolean isMatch = m.matches();
-        System.out.println(isMatch);
+        System.out.println(isMatch);*/
 
       /*  SignVo signVo = new SignVo();
         String aa =true==signVo.getIsSubmit()?"是":"否";
         System.out.println(aa);*/
-
+        System.out.println("aa".equals(null));
 
     }
 }

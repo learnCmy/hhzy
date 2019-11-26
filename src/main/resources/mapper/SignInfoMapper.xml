@@ -51,7 +51,7 @@
     order by a.create_time desc
   </select>
 
-    <select id="selectSignVo" resultType="com.hhzy.crm.modules.customer.dataobject.vo.SignVo"
+    <select id="selectSignVoExport" resultType="com.hhzy.crm.modules.customer.dataobject.vo.SignVo"
             parameterType="com.hhzy.crm.modules.customer.dataobject.dto.SignDTO">
         SELECT
             a.*,b.house_id,c.name as house_name,c.house_info,c.acreage,c.acreage_price,c.amount_price,c.status as house_status,c.info as house_describe,
@@ -130,6 +130,91 @@
         </choose>
         order by ${sortClause} ${sort}
     </select>
+
+
+
+    <select id="selectSignVo" resultType="com.hhzy.crm.modules.customer.dataobject.vo.SignVo"
+            parameterType="com.hhzy.crm.modules.customer.dataobject.dto.SignDTO">
+        SELECT
+        a.*,b.house_id,c.name as house_name,c.house_info,c.acreage,c.acreage_price,c.amount_price,c.status as house_status,c.info as house_describe,
+        c.type as houseType,c.room_no,c.build_no,c.floor_level,b.name,b.sex,b.mobile,b.id_card,b.address,b.offer_buy_time,b.user_id,b.pre_price,b.house_id,
+        b.work_address,b.profession,b.age,b.home_structure,b.buy_motive,b.source_way,d.username as user_name
+        FROM
+        sign_info a
+        LEFT JOIN offer_buy b ON b.id = a.offer_buy_id
+        LEFT JOIN house c ON b.house_id = c.id
+        left join  sys_user d on b.user_id=d.user_id
+        WHERE
+        b.`status` = 1
+        <if test="contractNo!=null and contractNo!=''">
+            and a.contract_no like  CONCAT('%', #{contractNo}, '%')
+        </if>
+        <if test="mobile!=null and mobile!=''">
+            and b.mobile like CONCAT('%', #{mobile}, '%')
+        </if>
+        <if test="name!=null and name!=''">
+            and b.name like CONCAT('%', #{name}, '%')
+        </if>
+        <if test="keyWord!=null and keyWord!=''">
+            and (b.name like CONCAT('%', #{keyWord}, '%')
+            or b.mobile like CONCAT('%', #{keyWord}, '%')
+            or c.name like CONCAT('%', #{keyWord}, '%')
+            )
+        </if>
+        <if test="userId!=null">
+            and d.user_id=#{userId}
+        </if>
+        <if test="houseId!=null">
+            and c.id=#{houseId}
+        </if>
+        <if test="houseType!=null">
+            and  c.type=#{houseType}
+        </if>
+        <if test="bankCategory!=null and bankCategory!=''">
+            and a.bank_category=#{bankCategory}
+        </if>
+        <if test="confirmInfo!=null">
+            and a.confirm_info=#{confirmInfo}
+        </if>
+        <choose>
+            <when test="dateType=='sign'">
+                <if test="signStartTime!=null">
+                    and a.sign_time <![CDATA[ >= ]]> #{signStartTime}
+                </if>
+                <if test="signEndTime!=null">
+                    and a.sign_time <![CDATA[ < ]]> date_add(#{signEndTime},interval 1 day)
+                </if>
+            </when>
+            <when test="dateType=='offer'">
+                <if test="signStartTime!=null">
+                    and b.offer_buy_time <![CDATA[ >= ]]>  #{signStartTime}
+                </if>
+                <if test="signEndTime!=null">
+                    and b.offer_buy_time <![CDATA[ < ]]> date_add(#{signEndTime},interval 1 day)
+                </if>
+            </when>
+            <when test="dateType=='loan'">
+                <if test="signStartTime!=null">
+                    and a.loan_time <![CDATA[ >= ]]> #{signStartTime}
+                </if>
+                <if test="signEndTime!=null">
+                    and a.loan_time <![CDATA[ < ]]> date_add(#{signEndTime},interval 1 day)
+                </if>
+            </when>
+            <otherwise>
+                <if test="signStartTime!=null">
+                    and a.create_time <![CDATA[ >= ]]> #{signStartTime}
+                </if>
+                <if test="signEndTime!=null">
+                    and a.create_time <![CDATA[ < ]]> date_add(#{signEndTime},interval 1 day)
+                </if>
+            </otherwise>
+        </choose>
+        order by ${sortClause} ${sort}
+    </select>
+
+
+
 
     <select id="sellAmountCount" resultType="java.math.BigDecimal">
          SELECT SUM(sign_amount_price) FROM `sign_info`

@@ -14,7 +14,7 @@ public class CrmConstant {
 
     public static  final  String numberRegex="^[-+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$";
 
-    public class Permissions{
+    public static class Permissions{
 
         public static final String SENSITIVE="sensitive";
 
@@ -22,6 +22,31 @@ public class CrmConstant {
 
         public static  final  String LOOKOTHER="lookother";
     }
+
+    public static class ActionType{
+
+        public static final String INSERT="1";
+
+        public static final String UPDATE="2";
+
+        public static  final  String DELETE="3";
+
+        public  static  final String EXPORT="4";
+
+        public static final String IMPORT="5";
+    }
+
+
+    public static class Client{
+
+        public static final String WEB="1";
+
+        public static final String APP ="2";
+    }
+
+
+
+
 
 
     /**

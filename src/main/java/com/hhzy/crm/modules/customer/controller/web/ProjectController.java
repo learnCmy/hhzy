@@ -1,6 +1,8 @@
 package com.hhzy.crm.modules.customer.controller.web;
 
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
+import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.response.CommonResult;
 import com.hhzy.crm.modules.customer.entity.Project;
 import com.hhzy.crm.modules.customer.service.ProjectService;
@@ -29,6 +31,7 @@ public class ProjectController extends BaseController {
 
     @PostMapping("/save")
     @ApiOperation("项目管理基本配置新增")
+    @DataLog(value = "项目管理新增",actionType =CrmConstant.ActionType.INSERT)
     public CommonResult save(@RequestBody Project project){
         projectService.save(project);
         return  CommonResult.success();
@@ -37,6 +40,7 @@ public class ProjectController extends BaseController {
 
     @PostMapping("/update")
     @ApiOperation("项目管理基本配置更新")
+    @DataLog(value = "项目管理更新",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult update(@RequestBody  Project project){
         projectService.updateSelective(project);
         return CommonResult.success();
@@ -60,10 +64,10 @@ public class ProjectController extends BaseController {
     }
 
 
-
     @PostMapping("/delete")
     @ApiOperation("删除项目")
     @RequiresPermissions("delete")
+    @DataLog(value = "项目管理更新",actionType =CrmConstant.ActionType.DELETE)
     public CommonResult delete(@RequestBody List<Long> projectIdList){
         projectService.deleteBatch(projectIdList);
         return CommonResult.success();

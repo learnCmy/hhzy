@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.entity.vo.TemplateExcelConstants;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.view.PoiBaseView;
 import com.github.pagehelper.PageInfo;
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
 import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.exception.BusinessException;
@@ -51,6 +52,7 @@ public class FollowLogController extends BaseController {
 
     @PostMapping("/list")
     @ApiOperation("跟进记录列表")
+    @RequiresPermissions("followselect")
     public CommonResult list(@RequestBody FollowLogDTO followLogDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(followLogDTO.getSortClause());
         followLogDTO.setSortClause(sortClause);
@@ -67,7 +69,8 @@ public class FollowLogController extends BaseController {
     @GetMapping("/update/user")
     @ApiOperation("修改置业顾问")
     @RequiresPermissions("updateuser")
-    public CommonResult list(Long id,Long userId){
+    @DataLog(value = "跟进记录置业顾问修改",actionType =CrmConstant.ActionType.UPDATE)
+    public CommonResult updateUser(Long id,Long userId){
         followLogService.updateUser(id,userId);
         return  CommonResult.success();
     }
@@ -76,7 +79,8 @@ public class FollowLogController extends BaseController {
     @PostMapping("/update/user/batch")
     @ApiOperation("批量修改置业顾问")
     @RequiresPermissions("updateuser")
-    public CommonResult updateUSer(@RequestBody UserBatchDTO userBatchDTO){
+    @DataLog(value = "跟进记录置业顾问批量修改",actionType =CrmConstant.ActionType.UPDATE)
+    public CommonResult updateUserBatch(@RequestBody UserBatchDTO userBatchDTO){
         followLogService.updateUserBatch(userBatchDTO);
         return CommonResult.success();
     }
@@ -85,6 +89,8 @@ public class FollowLogController extends BaseController {
 
     @PostMapping("/update")
     @ApiOperation("更新跟进记录")
+    @RequiresPermissions("followupdate")
+    @DataLog(value = "(网页)跟进记录修改",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult update(@RequestBody FollowLog followLog){
         if (followLog.getProjectId()==null){
             throw  new BusinessException("项目id不能为空");
@@ -105,6 +111,7 @@ public class FollowLogController extends BaseController {
     @PostMapping("/delete")
     @ApiOperation("删除跟进信息")
     @RequiresPermissions("delete")
+    @DataLog(value = "跟进记录删除",actionType =CrmConstant.ActionType.DELETE)
     public CommonResult delete(@RequestBody List<Long> followIdLogList){
         followLogService.deleteBatch(followIdLogList);
         return CommonResult.success();
@@ -114,9 +121,12 @@ public class FollowLogController extends BaseController {
     @GetMapping("/export")
     @ApiOperation("跟进导出")
     @RequiresPermissions("export")
-    public void export(ModelMap modelMap, FollowLogDTO followLogDTO ){
+    @DataLog(value = "跟进记录导出",actionType =CrmConstant.ActionType.EXPORT)
+    public void export( FollowLogDTO followLogDTO,ModelMap modelMap ){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(followLogDTO.getSortClause());
         followLogDTO.setSortClause(sortClause);
+        followLogDTO.setPage(null);
+        followLogDTO.setPageSize(null);
         PageInfo<FollowLog> select = followLogService.select(followLogDTO);
         SysUser user = getUser();
         Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());

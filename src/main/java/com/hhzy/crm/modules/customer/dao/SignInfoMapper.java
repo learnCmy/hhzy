@@ -16,6 +16,8 @@ public interface SignInfoMapper extends MyMapper<SignInfo> {
 
     List<SignInfo> selectList(@Param("signDTO") SignDTO signDTO);
 
+    List<SignVo> selectSignVoExport(SignDTO signDTO);
+
     List<SignVo> selectSignVo(SignDTO signDTO);
 
     BigDecimal sellAmountCount(@Param("startTime") Date startTime,@Param("endTime") Date endTime,@Param("projectId")Long projectId

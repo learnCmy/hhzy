@@ -27,7 +27,7 @@ public class OfferBuyDTO extends BaseEntity {
 
     private Integer status;
 
-    private Boolean confirmInfo;
+    private Integer confirmInfo ; //1 是 未签约 2是未确认 3 是已确认
 
     @ApiModelProperty("排序字段")
     private String sortClause="offerBuyTime";

@@ -9,9 +9,9 @@ import java.io.Serializable;
 public class BaseEntity implements Serializable {
 
     @Transient
-    private Integer page;
+    private Integer page=1;
 
     @Transient
-    private Integer pageSize;
+    private Integer pageSize=10;
 
 }

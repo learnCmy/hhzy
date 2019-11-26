@@ -80,9 +80,17 @@
       and a.offer_buy_time <![CDATA[ <= ]]> #{offerBuyDTO.offerEndTime}
     </if>
 
-    <if test="offerBuyDTO.confirmInfo!=null">
-      and d.confirm_info=#{offerBuyDTO.confirmInfo}
+    <if test="offerBuyDTO.confirmInfo!=null and offerBuyDTO.confirmInfo==2">
+      and d.confirm_info=false
    </if>
+
+    <if test="offerBuyDTO.confirmInfo!=null and offerBuyDTO.confirmInfo==3">
+      and d.confirm_info=true
+    </if>
+
+    <if test="offerBuyDTO.confirmInfo!=null and offerBuyDTO.confirmInfo==1">
+      and d.id is null
+    </if>
 
     order by ${offerBuyDTO.sortClause} ${offerBuyDTO.sort}
   </select>
@@ -108,5 +116,17 @@
   <select id="countNumberByStatus" resultType="integer">
     select  count(1) from offer_buy where project_id=#{projectId} and status=#{status}
   </select>
+  
+  
+  <select id="countSignNumber" resultType="integer">
+    select count(1) from  offer_buy a INNER join sign_info d on a.id=d.offer_buy_id
+    where a.project_id=#{projectId}
+  </select>
+
+  <select id="countLoanNumber" resultType="integer">
+    select count(1) from  offer_buy a INNER join sign_info d on a.id=d.offer_buy_id
+    where a.project_id=#{projectId}
+  </select>
+  
 
 </mapper>

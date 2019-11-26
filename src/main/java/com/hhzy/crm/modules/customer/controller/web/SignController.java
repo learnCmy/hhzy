@@ -4,6 +4,7 @@ import cn.afterturn.easypoi.entity.vo.TemplateExcelConstants;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.view.PoiBaseView;
 import com.github.pagehelper.PageInfo;
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
 import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.enums.HouseStatusEnum;
@@ -21,6 +22,7 @@ import com.hhzy.crm.modules.sys.entity.SysUser;
 import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +54,7 @@ public class SignController extends BaseController {
 
     @PostMapping("/save")
     @ApiOperation("保存签约信息")
-    @RequiresPermissions("sign")
+    @RequiresPermissions(value = {"signupdate"},logical = Logical.OR)
     public CommonResult save(@RequestBody SignInfo signInfo){
         signInfoService.saveSelective(signInfo);
         return CommonResult.success();
@@ -68,7 +70,8 @@ public class SignController extends BaseController {
 
     @PostMapping("/update")
     @ApiOperation("更新签约")
-    @RequiresPermissions("sign")
+    @RequiresPermissions(value = {"signupdate","anjie"},logical = Logical.OR)
+    @DataLog(value = "更新签约",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult update(@RequestBody SignInfo signInfo){
         signInfoService.updateSelective(signInfo);
         return CommonResult.success();
@@ -76,7 +79,7 @@ public class SignController extends BaseController {
 
     @PostMapping("/list")
     @ApiOperation("签约记录列表")
-    @RequiresPermissions("sign")
+    @RequiresPermissions(value = "signselect")
     public CommonResult list(@RequestBody SignDTO signDTO) {
         String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());
         signDTO.setSortClause(sortClause);
@@ -93,6 +96,7 @@ public class SignController extends BaseController {
     @PostMapping("/delete")
     @ApiOperation("删除签约信息")
     @RequiresPermissions("delete")
+    @DataLog(value = "签约信息删除",actionType =CrmConstant.ActionType.DELETE)
     public CommonResult delete(@RequestBody List<Long> signIdList){
         signInfoService.deleteBatch(signIdList);
         return CommonResult.success();
@@ -101,6 +105,7 @@ public class SignController extends BaseController {
 
     @GetMapping("/confirm")
     @ApiOperation("确认签约信息")
+    @RequiresPermissions(value = {"signupdate","anjie"},logical = Logical.OR)
     public CommonResult confirm(Long signId,Boolean confirmInfo){
         SignInfo signInfo = new SignInfo();
         signInfo.setId(signId);
@@ -113,13 +118,16 @@ public class SignController extends BaseController {
     @GetMapping("/export/shop")
     @ApiOperation("/导出商铺订购信息表")
     @RequiresPermissions("export")
-    public void exportshangpu(ModelMap modelMap,SignDTO signDTO){
+    @DataLog(value = "商铺订购信息表导出",actionType =CrmConstant.ActionType.EXPORT)
+    public void exportshangpu(SignDTO signDTO,ModelMap modelMap){
         signDTO.setHouseType(2);
         //String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());
         //signDTO.setSortClause(sortClause);
         signDTO.setSortClause("offer_buy_time desc,sign_time");
         signDTO.setSort("desc");
-        PageInfo<SignVo> signVoPageInfo = signInfoService.selectSignVo(signDTO);
+        signDTO.setPage(null);
+        signDTO.setPageSize(null);
+        PageInfo<SignVo> signVoPageInfo = signInfoService.selectSignVoExport(signDTO);
         List<SignVo> list = signVoPageInfo.getList();
         SysUser user = getUser();
         Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
@@ -143,13 +151,16 @@ public class SignController extends BaseController {
     @GetMapping("/export")
     @ApiOperation("/导出住宅订购信息表")
     @RequiresPermissions("export")
-    public void exportzhuzhai(ModelMap modelMap,SignDTO signDTO){
+    @DataLog(value = "住宅订购信息表导出",actionType =CrmConstant.ActionType.EXPORT)
+    public void exportzhuzhai(SignDTO signDTO,ModelMap modelMap){
         signDTO.setHouseType(1);
         //String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());
         //signDTO.setSortClause(sortClause);
         signDTO.setSortClause("offer_buy_time desc,sign_time");
         signDTO.setSort("desc");
-        PageInfo<SignVo> signVoPageInfo = signInfoService.selectSignVo(signDTO);
+        signDTO.setPage(null);
+        signDTO.setPageSize(null);
+        PageInfo<SignVo> signVoPageInfo = signInfoService.selectSignVoExport(signDTO);
         Project project = projectService.queryById(signDTO.getProjectId());
         Map<String, Object> map = new HashMap<String, Object>();
         List<SignVo> list = signVoPageInfo.getList();

@@ -1,6 +1,7 @@
 package com.hhzy.crm.modules.customer.controller.app;
 
 import com.github.pagehelper.PageInfo;
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
 import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.exception.BusinessException;
@@ -94,6 +95,7 @@ public class AppFollowLogController extends BaseController {
 
     @PostMapping("/delete")
     @ApiOperation("删除跟进信息(软删除 是把userId 置为空)")
+    @DataLog(value = "跟进记录删除",actionType =CrmConstant.ActionType.DELETE,client =CrmConstant.Client.APP )
     public CommonResult delete(@RequestBody List<Long> followIdLogList){
        followLogService.removeUserId(followIdLogList);
         return CommonResult.success();

@@ -4,7 +4,9 @@ import cn.afterturn.easypoi.entity.vo.TemplateExcelConstants;
 import cn.afterturn.easypoi.excel.entity.TemplateExportParams;
 import cn.afterturn.easypoi.view.PoiBaseView;
 import com.github.pagehelper.PageInfo;
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
+import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.response.CommonResult;
 import com.hhzy.crm.common.utils.StringHandleUtils;
 import com.hhzy.crm.modules.customer.dataobject.dto.TookeenDTO;
@@ -42,6 +44,7 @@ public class TookeenController extends BaseController {
 
     @PostMapping("list")
     @ApiOperation("拓展客户列表")
+    @RequiresPermissions("tookeenselect")
     public CommonResult list(@RequestBody TookeenDTO tookeenDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(tookeenDTO.getSortClause());
         tookeenDTO.setSortClause(sortClause);
@@ -54,6 +57,7 @@ public class TookeenController extends BaseController {
     @PostMapping("/update/user")
     @ApiOperation("修改置业顾问")
     @RequiresPermissions("updateuser")
+    @DataLog(value = "拓展修改置业顾问",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult updateUser(Long id, Long userId){
         tookeenService.updateUser(id,userId);
         return  CommonResult.success();
@@ -63,7 +67,8 @@ public class TookeenController extends BaseController {
     @PostMapping("/update/user/batch")
     @ApiOperation("批量修改置业顾问")
     @RequiresPermissions("updateuser")
-    public CommonResult updateUSer(@RequestBody UserBatchDTO userBatchDTO){
+    @DataLog(value = "拓展批量修改置业顾问",actionType =CrmConstant.ActionType.UPDATE)
+    public CommonResult updateUSerBatch(@RequestBody UserBatchDTO userBatchDTO){
         tookeenService.updateUserBatch(userBatchDTO);
         return CommonResult.success();
     }
@@ -71,8 +76,9 @@ public class TookeenController extends BaseController {
 
 
     @PostMapping("/delete")
-    @ApiOperation("删除认筹信息")
+    @ApiOperation("删除拓展信息")
     @RequiresPermissions("delete")
+    @DataLog(value = "删除拓展信息",actionType =CrmConstant.ActionType.DELETE)
     public CommonResult delete(@RequestBody List<Long> ids){
         tookeenService.deleteBatch(ids);
         return CommonResult.success();
@@ -81,6 +87,8 @@ public class TookeenController extends BaseController {
 
     @PostMapping("/update")
     @ApiOperation("更新拓展客户信息")
+    @RequiresPermissions("tookeenupdate")
+    @DataLog(value = "更新拓展客户信息",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult updateTookeen(@RequestBody Tookeen tookeen){
         tookeenService.updateBasicTookeen(tookeen);
         return CommonResult.success();
@@ -95,10 +103,13 @@ public class TookeenController extends BaseController {
 
 
     @GetMapping("/export")
-    @ApiOperation("/来访客户登记导出")
-    public void export(ModelMap modelMap, TookeenDTO tookeenDTO){
+    @ApiOperation("/拓展客户表导出")
+    @DataLog(value = "拓展客户表导出",actionType =CrmConstant.ActionType.EXPORT)
+    public void export(TookeenDTO tookeenDTO,ModelMap modelMap){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(tookeenDTO.getSortClause());
         tookeenDTO.setSortClause(sortClause);
+        tookeenDTO.setPage(null);
+        tookeenDTO.setPageSize(null);
         PageInfo<Tookeen> tookeenPageInfo = tookeenService.selectList(tookeenDTO);
         List<Tookeen> list = tookeenPageInfo.getList();
         Map<String, Object> map = new HashMap<String, Object>();
