@@ -1,8 +1,10 @@
 package com.hhzy.crm.modules.customer.controller.web;
 
+import com.hhzy.crm.common.annotation.DataLog;
 import com.hhzy.crm.common.base.BaseController;
+import com.hhzy.crm.common.base.CrmConstant;
 import com.hhzy.crm.common.response.CommonResult;
-import com.hhzy.crm.modules.customer.entity.SignInfo;
+import com.hhzy.crm.modules.customer.dataobject.dto.SignInfoDTO;
 import com.hhzy.crm.modules.customer.service.SignInfoService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -31,9 +33,10 @@ public class AnJieController extends BaseController {
 
     @PostMapping("/update")
     @ApiOperation("更新或录入 按揭信息")
+    @DataLog(value = "更新(按揭信息)",actionType =CrmConstant.ActionType.UPDATE)
     @RequiresPermissions("anjie")
-    public CommonResult update(@RequestBody SignInfo signInfo){
-        signInfoService.updateOrSaveAnjie(signInfo);
+    public CommonResult update(@RequestBody SignInfoDTO signInfoDTO){
+        signInfoService.updateOrSaveAnjie(signInfoDTO);
         return CommonResult.success();
     }
 

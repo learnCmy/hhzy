@@ -63,8 +63,8 @@ public class SysRoleController  extends BaseController {
     public CommonResult info(@PathVariable("roleId") Long roleId){
         SysRole role = sysRoleService.selectById(roleId);
         //查询角色对应的菜单
-        // List<Long> menuIdList = sysRoleMenuService.queryMenuIdList(roleId);
-        // role.setMenuIdList(menuIdList);
+        List<Long> menuIdList = sysRoleMenuService.queryMenuIdList(roleId);
+        role.setMenuIdList(menuIdList);
         MenuCheckedVO menuCheckVo = sysRoleMenuService.getMenuCheckVo(roleId);
         role.setMenuCheckedVO(menuCheckVo);
         return CommonResult.success();

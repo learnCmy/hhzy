@@ -29,6 +29,7 @@
     <result column="age" property="age" jdbcType="VARCHAR"/>
     <result column="vip_card" property="vipCard" jdbcType="VARCHAR"/>
     <result column="purpose_price" property="purposePrice" jdbcType="VARCHAR"/>
+    <result column="product_type" property="productType" jdbcType="INTEGER"/>
   </resultMap>
 
   <select id="selcetByKeyWord" resultType="com.hhzy.crm.modules.customer.entity.IdentifyLog">

@@ -68,4 +68,11 @@
       order by ${houseDTO.sortClause} ${houseDTO.sort}
     </select>
 
+  <update id="updateStatus">
+    update house set status=#{status} where  id in
+    <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </update>
+
 </mapper>

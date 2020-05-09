@@ -19,6 +19,8 @@ public interface HouseService {
 
     void updateStatus(Long houseId,Integer status);
 
+    void  updateBatchStatus(List<Long> houseIds,Integer status);
+
     void updateStatus(Long houseId,Long offerId,Integer status);
 
     House selectHouseInfo(Long houseId);

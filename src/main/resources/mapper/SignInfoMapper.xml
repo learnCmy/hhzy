@@ -59,11 +59,12 @@
             b.work_address,b.profession,b.age,b.home_structure,b.buy_motive,b.source_way,d.username as user_name
         FROM
             sign_info a
-            right JOIN offer_buy b ON b.id = a.offer_buy_id
+            LEFT JOIN offer_buy b ON b.id = a.offer_buy_id
             LEFT JOIN house c ON b.house_id = c.id
             left join  sys_user d on b.user_id=d.user_id
         WHERE
             b.`status` = 1
+            and a.project_id=#{projectId}
         <if test="contractNo!=null and contractNo!=''">
             and a.contract_no like  CONCAT('%', #{contractNo}, '%')
         </if>
@@ -146,6 +147,9 @@
         left join  sys_user d on b.user_id=d.user_id
         WHERE
         b.`status` = 1
+        <if test="projectId!=null and projectId!=''">
+            and a.project_id=#{projectId}
+        </if>
         <if test="contractNo!=null and contractNo!=''">
             and a.contract_no like  CONCAT('%', #{contractNo}, '%')
         </if>

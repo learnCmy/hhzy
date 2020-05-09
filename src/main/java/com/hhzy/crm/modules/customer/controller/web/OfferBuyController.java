@@ -70,9 +70,18 @@ public class OfferBuyController extends BaseController {
     public CommonResult  select(@RequestBody OfferBuyDTO offerBuyDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(offerBuyDTO.getSortClause());
         offerBuyDTO.setSortClause(sortClause);
-        PageInfo<OfferBuy> offerBuyPageInfo = offerBuyService.selectList(offerBuyDTO);
         SysUser user = getUser();
         Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        if (userPermissions.contains(CrmConstant.Permissions.SHOP)&&!userPermissions.contains(CrmConstant.Permissions.RESIDENCE)){
+            offerBuyDTO.setHouseType(2);
+        }else if (userPermissions.contains(CrmConstant.Permissions.RESIDENCE)
+                &&!userPermissions.contains(CrmConstant.Permissions.SHOP)){
+            offerBuyDTO.setHouseType(1);
+        }else if (!userPermissions.contains(CrmConstant.Permissions.RESIDENCE)
+                &&!userPermissions.contains(CrmConstant.Permissions.SHOP)){
+            return CommonResult.success(new PageInfo<OfferBuy>());
+        }
+        PageInfo<OfferBuy> offerBuyPageInfo = offerBuyService.selectList(offerBuyDTO);
         if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
             offerBuyPageInfo.getList().forEach(e->e.setMobile(null));
         }

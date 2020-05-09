@@ -25,6 +25,7 @@
     <result column="source_way" jdbcType="INTEGER" property="sourceWay"/>
     <result column="profession" jdbcType="VARCHAR" property="profession"/>
     <result column="refuse_remark" jdbcType="VARCHAR" property="refuseRemark"/>
+    <result column="product_type" property="productType" jdbcType="INTEGER"/>
   </resultMap>
 
 
@@ -90,6 +91,10 @@
 
     <if test="offerBuyDTO.confirmInfo!=null and offerBuyDTO.confirmInfo==1">
       and d.id is null
+    </if>
+
+    <if test="offerBuyDTO.houseType!=null">
+      and c.type=#{offerBuyDTO.houseType}
     </if>
 
     order by ${offerBuyDTO.sortClause} ${offerBuyDTO.sort}

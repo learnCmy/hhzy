@@ -12,4 +12,6 @@ import java.util.List;
 public interface HouseMapper extends MyMapper<House> {
 
     List<House> selectList(@Param("houseDTO") HouseDTO houseDTO);
+
+    void updateStatus(@Param("ids") List<Long> ids,@Param("status") Integer status);
 }

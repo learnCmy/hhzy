@@ -130,6 +130,11 @@ public class CustomerController extends BaseController {
             if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
                customer.setMobile(null);
             }
+            if (Integer.valueOf(1).equals(customer.getSex())){
+                customer.setSexStr("男");
+            }else {
+                customer.setSexStr("女");
+            }
         }
         Map<String, Object> map = new HashMap<String, Object>();
         TemplateExportParams params = new TemplateExportParams(

@@ -21,6 +21,7 @@ import com.hhzy.crm.modules.customer.service.HouseService;
 import com.hhzy.crm.modules.customer.service.ProjectService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,20 @@ public class HouseController extends BaseController {
     @DataLog(value = "更新房屋售卖状态",actionType =CrmConstant.ActionType.UPDATE)
     public CommonResult update(Long houseId,Integer status){
         houseService.updateStatus(houseId,status);
+        return CommonResult.success();
+    }
+
+
+    @PostMapping("/update/batch/status")
+    @ApiOperation("批量更新房屋售卖状态")
+    @DataLog(value = "更新房屋售卖状态",actionType =CrmConstant.ActionType.UPDATE)
+    public CommonResult updateStatusBatch(@RequestBody House house){
+        List<Long> ids = house.getIds();
+        Integer status = house.getStatus();
+        if (CollectionUtils.isEmpty(ids)||status==null){
+            return CommonResult.success();
+        }
+        houseService.updateBatchStatus(ids,status);
         return CommonResult.success();
     }
 

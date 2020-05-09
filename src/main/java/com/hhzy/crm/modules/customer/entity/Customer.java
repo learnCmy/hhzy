@@ -34,6 +34,9 @@ public class Customer {
      */
     private Integer sex;
 
+    @Transient
+    private String sexStr;
+
     /**
      * 联系方式
      */

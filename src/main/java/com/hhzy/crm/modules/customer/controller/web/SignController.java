@@ -12,8 +12,11 @@ import com.hhzy.crm.common.enums.SourceWayEnum;
 import com.hhzy.crm.common.response.CommonResult;
 import com.hhzy.crm.common.utils.EnumUtil;
 import com.hhzy.crm.common.utils.StringHandleUtils;
+import com.hhzy.crm.modules.customer.dataobject.dto.ClearDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.SignDTO;
+import com.hhzy.crm.modules.customer.dataobject.dto.SignInfoDTO;
 import com.hhzy.crm.modules.customer.dataobject.vo.SignVo;
+import com.hhzy.crm.modules.customer.entity.OfferBuy;
 import com.hhzy.crm.modules.customer.entity.Project;
 import com.hhzy.crm.modules.customer.entity.SignInfo;
 import com.hhzy.crm.modules.customer.service.ProjectService;
@@ -25,6 +28,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.joda.time.DateTime;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -72,10 +76,25 @@ public class SignController extends BaseController {
     @ApiOperation("更新签约")
     @RequiresPermissions(value = {"signupdate","anjie"},logical = Logical.OR)
     @DataLog(value = "更新签约",actionType =CrmConstant.ActionType.UPDATE)
-    public CommonResult update(@RequestBody SignInfo signInfo){
-        signInfoService.updateSelective(signInfo);
+    public CommonResult update(@RequestBody SignInfoDTO signInfoDTO){
+        SignInfo signInfo = signInfoService.queryById(signInfoDTO.getId());
+        BeanUtils.copyProperties(signInfoDTO,signInfo);
+        signInfoService.update(signInfo);
         return CommonResult.success();
     }
+
+    @PostMapping("/update/clear")
+    @ApiOperation("更新结算信息")
+    @RequiresPermissions(value = {"signupdate","anjie"},logical = Logical.OR)
+    @DataLog(value = "更新结算",actionType =CrmConstant.ActionType.UPDATE)
+    public CommonResult updateClear(@RequestBody ClearDTO clearDTO){
+        SignInfo signInfo = signInfoService.queryById(clearDTO.getSignId());
+        BeanUtils.copyProperties(clearDTO,signInfo);
+        signInfoService.update(signInfo);
+        return CommonResult.success();
+    }
+
+
 
     @PostMapping("/list")
     @ApiOperation("签约记录列表")
@@ -83,9 +102,18 @@ public class SignController extends BaseController {
     public CommonResult list(@RequestBody SignDTO signDTO) {
         String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());
         signDTO.setSortClause(sortClause);
-        PageInfo<SignVo> signVoPageInfo = signInfoService.selectSignVo(signDTO);
         SysUser user = getUser();
         Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        if (userPermissions.contains(CrmConstant.Permissions.SHOP)&&!userPermissions.contains(CrmConstant.Permissions.RESIDENCE)){
+            signDTO.setHouseType(2);
+        }else if (userPermissions.contains(CrmConstant.Permissions.RESIDENCE)
+                &&!userPermissions.contains(CrmConstant.Permissions.SHOP)){
+            signDTO.setHouseType(1);
+        }else if (!userPermissions.contains(CrmConstant.Permissions.RESIDENCE)
+                &&!userPermissions.contains(CrmConstant.Permissions.SHOP)){
+            return CommonResult.success(new PageInfo<SignVo>());
+        }
+        PageInfo<SignVo> signVoPageInfo = signInfoService.selectSignVo(signDTO);
         if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
             signVoPageInfo.getList().forEach(e->e.setMobile(null));
         }

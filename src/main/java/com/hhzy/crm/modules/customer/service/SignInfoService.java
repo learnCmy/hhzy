@@ -3,6 +3,7 @@ package com.hhzy.crm.modules.customer.service;
 import com.github.pagehelper.PageInfo;
 import com.hhzy.crm.common.base.BaseService;
 import com.hhzy.crm.modules.customer.dataobject.dto.SignDTO;
+import com.hhzy.crm.modules.customer.dataobject.dto.SignInfoDTO;
 import com.hhzy.crm.modules.customer.dataobject.vo.SignVo;
 import com.hhzy.crm.modules.customer.entity.SignInfo;
 
@@ -17,7 +18,7 @@ public interface SignInfoService  extends BaseService<SignInfo> {
 
     void  deleteBatch(List<Long> ids);
 
-    void updateOrSaveAnjie(SignInfo signInfo);
+    void updateOrSaveAnjie(SignInfoDTO signInfoDTO);
 
     PageInfo<SignInfo> selectList(SignDTO signDTO);
 

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hhzy.crm.modules.sys.dao.SysLogMapper" >
+  <resultMap id="BaseResultMap" type="com.hhzy.crm.modules.sys.entity.SysLog" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="operation" property="operation" jdbcType="VARCHAR" />
+    <result column="action_type" property="actionType" jdbcType="INTEGER"/>
+    <result column="method" property="method" jdbcType="VARCHAR" />
+    <result column="params" property="params" jdbcType="VARCHAR" />
+    <result column="time" property="time" jdbcType="BIGINT" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="client" property="client" jdbcType="INTEGER"/>
+  </resultMap>
+
+  <select id="listSysLog" resultType="com.hhzy.crm.modules.sys.entity.SysLog">
+    select * from sys_log where 1=1
+    <if test="keyWord!=null and keyWord !='' ">
+      and operation=#{keyWord}
+    </if>
+
+    <if test="startTime!=null">
+      and create_time <![CDATA[ >= ]]> #{startTime}
+    </if>
+
+    <if test="endTime!=null">
+      and create_time <![CDATA[ <= ]]> #{endTime}
+    </if>
+     order by create_time desc
+  </select>
+</mapper>

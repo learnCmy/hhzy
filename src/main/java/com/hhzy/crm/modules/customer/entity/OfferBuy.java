@@ -141,4 +141,8 @@ public class OfferBuy {
 
     @Transient
     private Boolean confirmInfo;
+
+    //产品类型  1- 住宅 2-商铺
+    @Column(name = "product_type")
+    private int productType;
 }

@@ -55,6 +55,8 @@ public class AppOfferBuyController extends BaseController {
             throw  new BusinessException("请选择房屋");
         }
         House house = houseService.selectHouseInfo(offerBuy.getHouseId());
+        //产品类型
+        offerBuy.setProductType(house.getType());
         if (!HouseStatusEnum.SELLING.getCode().equals(house.getStatus())){
             throw  new BusinessException("房屋为已售或者没开卖,请重新选择");
         }
@@ -89,6 +91,8 @@ public class AppOfferBuyController extends BaseController {
             throw  new BusinessException("请选择房屋");
         }
         House house = houseService.selectHouseInfo(offerBuy.getHouseId());
+        //产品类型
+        offerBuy.setProductType(house.getType());
         if (!HouseStatusEnum.SELLING.getCode().equals(house.getStatus())){
             throw  new BusinessException("房屋为已售或者没开卖,请重新选择");
         }

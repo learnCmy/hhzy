@@ -9,6 +9,7 @@ import com.hhzy.crm.common.exception.BusinessException;
 import com.hhzy.crm.modules.customer.dao.HouseMapper;
 import com.hhzy.crm.modules.customer.dao.SignInfoMapper;
 import com.hhzy.crm.modules.customer.dataobject.dto.SignDTO;
+import com.hhzy.crm.modules.customer.dataobject.dto.SignInfoDTO;
 import com.hhzy.crm.modules.customer.dataobject.export.SignExportResult;
 import com.hhzy.crm.modules.customer.dataobject.vo.SignVo;
 import com.hhzy.crm.modules.customer.entity.House;
@@ -57,8 +58,8 @@ public class SignInfoServiceImpl extends BaseServiceImpl<SignInfo> implements Si
     }
 
     @Override
-    public void updateOrSaveAnjie(SignInfo signInfo) {
-        Long offerBuyId = signInfo.getOfferBuyId();
+    public void updateOrSaveAnjie(SignInfoDTO signInfoDTO) {
+        Long offerBuyId = signInfoDTO.getOfferBuyId();
         OfferBuy buy = offerBuyService.selectById(offerBuyId);
         if (buy==null){
             throw  new BusinessException("认购者信息不存在");
@@ -67,12 +68,16 @@ public class SignInfoServiceImpl extends BaseServiceImpl<SignInfo> implements Si
             throw new BusinessException("此认购信息状态不正确");
         }
         Example example = new Example(SignInfo.class);
-        example.createCriteria().andEqualTo("projectId",signInfo.getProjectId())
-                .andEqualTo("offerBuyId",signInfo.getOfferBuyId());
+        example.createCriteria().andEqualTo("projectId",signInfoDTO.getProjectId())
+                .andEqualTo("offerBuyId",signInfoDTO.getOfferBuyId());
         List<SignInfo> signInfos = signInfoMapper.selectByExample(example);
         if (CollectionUtils.isNotEmpty(signInfos)){
-            signInfoMapper.updateByPrimaryKeySelective(signInfo);
+            SignInfo signInfo = signInfos.get(0);
+            BeanUtils.copyProperties(signInfoDTO,signInfo);
+            signInfoMapper.updateByPrimaryKey(signInfo);
         }else {
+            SignInfo signInfo = new SignInfo();
+            BeanUtils.copyProperties(signInfoDTO,signInfo);
             signInfoMapper.insertSelective(signInfo);
         }
     }

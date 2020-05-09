@@ -83,6 +83,11 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public void updateBatchStatus(List<Long> houseIds, Integer status) {
+        houseMapper.updateStatus(houseIds,status);
+    }
+
+    @Override
     public void updateStatus(Long houseId,Long offerbuyId, Integer status) {
         House house = houseMapper.selectByPrimaryKey(houseId);
         if (house!=null){
