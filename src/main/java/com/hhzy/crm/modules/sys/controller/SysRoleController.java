@@ -67,7 +67,7 @@ public class SysRoleController  extends BaseController {
         role.setMenuIdList(menuIdList);
         MenuCheckedVO menuCheckVo = sysRoleMenuService.getMenuCheckVo(roleId);
         role.setMenuCheckedVO(menuCheckVo);
-        return CommonResult.success();
+        return CommonResult.success(role);
     }
 
 

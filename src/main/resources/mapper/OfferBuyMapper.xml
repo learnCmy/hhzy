@@ -97,6 +97,10 @@
       and c.type=#{offerBuyDTO.houseType}
     </if>
 
+    <if test="offerBuyDTO.productType!=null">
+      and a.product_type=#{offerBuyDTO.productType}
+    </if>
+
     order by ${offerBuyDTO.sortClause} ${offerBuyDTO.sort}
   </select>
 

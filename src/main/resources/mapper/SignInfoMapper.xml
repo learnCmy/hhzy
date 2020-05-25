@@ -89,12 +89,17 @@
         <if test="houseType!=null">
          and  c.type=#{houseType}
         </if>
+
+        <if test="productType!=null">
+            and  b.product_type=#{productType}
+        </if>
         <if test="bankCategory!=null and bankCategory!=''">
             and a.bank_category=#{bankCategory}
         </if>
         <if test="confirmInfo!=null">
             and a.confirm_info=#{confirmInfo}
         </if>
+
         <choose>
             <when test="dateType=='sign'">
                 <if test="signStartTime!=null">
@@ -174,6 +179,9 @@
         <if test="houseType!=null">
             and  c.type=#{houseType}
         </if>
+        <if test="productType!=null">
+            and  b.product_type=#{productType}
+        </if>
         <if test="bankCategory!=null and bankCategory!=''">
             and a.bank_category=#{bankCategory}
         </if>
@@ -221,14 +229,17 @@
 
 
     <select id="sellAmountCount" resultType="java.math.BigDecimal">
-         SELECT SUM(sign_amount_price) FROM `sign_info`
+         SELECT SUM(sign_amount_price) FROM `sign_info` a left  join  house b on a.house_id=b.id
          where 1=1
-         and project_id=#{projectId}
+         and a.project_id=#{projectId}
         <if test="startTime!=null">
-            and create_time <![CDATA[ >= ]]> #{startTime}
+            and a.create_time <![CDATA[ >= ]]> #{startTime}
         </if>
         <if test="endTime!=null">
-            and create_time <![CDATA[ <= ]]> #{endTime}
+            and a.create_time <![CDATA[ <= ]]> #{endTime}
+        </if>
+        <if test="houseType!=null">
+          and b.type=#{houseType}
         </if>
     </select>
 

@@ -28,11 +28,14 @@ import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +69,15 @@ public class IdentifyController extends BaseController {
         PageInfo<IdentifyLog> identifyLogPageInfo = identifyService.selectList(identifyDTO);
         SysUser user = getUser();
         Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        if (userPermissions.contains(CrmConstant.Permissions.SHOP)&&!userPermissions.contains(CrmConstant.Permissions.RESIDENCE)){
+            identifyDTO.setProductType(2);
+        }else if (userPermissions.contains(CrmConstant.Permissions.RESIDENCE)
+                &&!userPermissions.contains(CrmConstant.Permissions.SHOP)){
+            identifyDTO.setProductType(1);
+        }else if (!userPermissions.contains(CrmConstant.Permissions.RESIDENCE)
+                &&!userPermissions.contains(CrmConstant.Permissions.SHOP)){
+            return CommonResult.success(new PageInfo<IdentifyLog>());
+        }
         if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
             identifyLogPageInfo.getList().forEach(e->e.setMobile(null));
         }
@@ -157,6 +169,11 @@ public class IdentifyController extends BaseController {
             }
             IdentifySellStatusEnum identifySellStatusEnum = EnumUtil.getByCode(identifyLog.getSellStatus(), IdentifySellStatusEnum.class);
             identifyLog.setSellStatusStr(identifySellStatusEnum==null?null:identifySellStatusEnum.getMessage());
+            if (Integer.valueOf(1).equals(identifyLog.getProductType())){
+                identifyLog.setProductTypeStr("住宅");
+            }else if (Integer.valueOf(2).equals(identifyLog.getProductType())){
+                identifyLog.setProductTypeStr("商铺");
+            }
         }
         Map<String, Object> map = new HashMap<String, Object>();
         TemplateExportParams params = new TemplateExportParams(
@@ -164,7 +181,22 @@ public class IdentifyController extends BaseController {
         map.put("list",list);
         Project project = projectService.queryById(identifyDTO.getProjectId());
         map.put("projectName",project.getProjectName());
-        modelMap.put(TemplateExcelConstants.FILE_NAME, "认筹登记表");
+        String yyyyMMdd = new DateTime().toString("yyyyMMdd");
+        String fileName="";
+        if (identifyDTO.getProductType()!=null){
+            if (Integer.valueOf(1).equals(identifyDTO.getProductType())){
+                fileName= "住宅"+"认筹登记表"+yyyyMMdd;
+            }else if (Integer.valueOf(2).equals(identifyDTO.getProductType())){
+                fileName="商铺"+"认筹登记表"+yyyyMMdd;
+            }
+        }else {
+            fileName="认筹登记表"+yyyyMMdd;
+        }
+        try {
+            modelMap.put(TemplateExcelConstants.FILE_NAME, URLEncoder.encode(fileName,"UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            modelMap.put(TemplateExcelConstants.FILE_NAME,fileName);
+        }
         modelMap.put(TemplateExcelConstants.PARAMS, params);
         modelMap.put(TemplateExcelConstants.MAP_DATA, map);
         PoiBaseView.render(modelMap, request, response,

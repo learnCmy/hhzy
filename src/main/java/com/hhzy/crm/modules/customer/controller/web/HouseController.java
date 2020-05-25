@@ -19,11 +19,14 @@ import com.hhzy.crm.modules.customer.entity.House;
 import com.hhzy.crm.modules.customer.entity.Project;
 import com.hhzy.crm.modules.customer.service.HouseService;
 import com.hhzy.crm.modules.customer.service.ProjectService;
+import com.hhzy.crm.modules.sys.entity.SysUser;
+import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +34,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 @RestController
@@ -46,6 +52,9 @@ public class HouseController extends BaseController {
 
     @Autowired
     private ProjectService projectService;
+
+    @Autowired
+    private ShiroService shiroService;
 
     @PostMapping("/save")
     @ApiOperation("新增房屋信息")
@@ -94,6 +103,17 @@ public class HouseController extends BaseController {
     public CommonResult selectHouse(@RequestBody HouseDTO houseDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(houseDTO.getSortClause());
         houseDTO.setSortClause(sortClause);
+        SysUser user = getUser();
+        Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        if (userPermissions.contains(CrmConstant.Permissions.SHOP)&&!userPermissions.contains(CrmConstant.Permissions.RESIDENCE)){
+            houseDTO.setHouseTypePermission(2);
+        }else if (userPermissions.contains(CrmConstant.Permissions.RESIDENCE)
+                &&!userPermissions.contains(CrmConstant.Permissions.SHOP)){
+            houseDTO.setHouseTypePermission(1);
+        }else if (!userPermissions.contains(CrmConstant.Permissions.RESIDENCE)
+                &&!userPermissions.contains(CrmConstant.Permissions.SHOP)){
+            return CommonResult.success(new PageInfo<House>());
+        }
         PageInfo<House> housePageInfo = houseService.selectHouse(houseDTO);
         return  CommonResult.success(housePageInfo);
     }
@@ -168,7 +188,7 @@ public class HouseController extends BaseController {
     @ApiOperation("房屋导出")
     @RequiresPermissions("export")
     @DataLog(value = "房屋数据导出",actionType =CrmConstant.ActionType.EXPORT)
-    public void export(HouseDTO houseDTO,ModelMap modelMap){
+    public void export(HouseDTO houseDTO,ModelMap modelMap) throws UnsupportedEncodingException {
         houseDTO.setSortClause("type,name,build_no,floor_level,room_no");
         houseDTO.setSort("asc");
         houseDTO.setPage(null);
@@ -193,7 +213,7 @@ public class HouseController extends BaseController {
         map.put("list",list);
         Project project = projectService.queryById(houseDTO.getProjectId());
         map.put("projectName",project.getProjectName());
-        modelMap.put(TemplateExcelConstants.FILE_NAME, "房屋表");
+        modelMap.put(TemplateExcelConstants.FILE_NAME, URLEncoder.encode("房屋信息"+new DateTime().toString("yyyyMMdd"),"UTF-8"));
         modelMap.put(TemplateExcelConstants.PARAMS, params);
         modelMap.put(TemplateExcelConstants.MAP_DATA, map);
         PoiBaseView.render(modelMap, request, response,

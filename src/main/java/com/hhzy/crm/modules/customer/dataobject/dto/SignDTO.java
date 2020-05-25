@@ -57,6 +57,8 @@ public class SignDTO  extends BaseEntity {
     private String sort="desc";
 
 
+    private String productType;
+
 
 
 }

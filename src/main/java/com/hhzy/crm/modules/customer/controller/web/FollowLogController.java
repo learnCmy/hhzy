@@ -21,10 +21,13 @@ import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +125,7 @@ public class FollowLogController extends BaseController {
     @ApiOperation("跟进导出")
     @RequiresPermissions("export")
     @DataLog(value = "跟进记录导出",actionType =CrmConstant.ActionType.EXPORT)
-    public void export( FollowLogDTO followLogDTO,ModelMap modelMap ){
+    public void export( FollowLogDTO followLogDTO,ModelMap modelMap ) throws UnsupportedEncodingException {
         String sortClause = StringHandleUtils.camel2UnderMultipleline(followLogDTO.getSortClause());
         followLogDTO.setSortClause(sortClause);
         followLogDTO.setPage(null);
@@ -142,7 +145,7 @@ public class FollowLogController extends BaseController {
         map.put("list",list);
         Project project = projectService.queryById(followLogDTO.getProjectId());
         map.put("projectName",project.getProjectName());
-        modelMap.put(TemplateExcelConstants.FILE_NAME, "跟进记录表");
+        modelMap.put(TemplateExcelConstants.FILE_NAME, URLEncoder.encode("跟进记录表"+new DateTime().toString("yyyyMMdd"),"UTF-8"));
         modelMap.put(TemplateExcelConstants.PARAMS, params);
         modelMap.put(TemplateExcelConstants.MAP_DATA, map);
         PoiBaseView.render(modelMap, request, response,

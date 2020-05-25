@@ -36,4 +36,6 @@ public class OfferBuyDTO extends BaseEntity {
     private String sort="desc";
 
     private Integer houseType;
+
+    private String productType;
 }

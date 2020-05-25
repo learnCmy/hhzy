@@ -176,4 +176,11 @@ public class Customer {
 
     @Transient
     private Long followId;
+
+    //产品类型
+    @Column(name = "product_type")
+    private Integer productType;
+
+    @Transient
+    private String productTypeStr;
 }

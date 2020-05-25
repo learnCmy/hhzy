@@ -157,5 +157,8 @@ public class IdentifyLog {
 
     //产品类型  1- 住宅 2-商铺
     @Column(name = "product_type")
-    private int productType;
+    private Integer productType;
+
+    @Transient
+    private String productTypeStr;
 }

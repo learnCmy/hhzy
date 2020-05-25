@@ -65,6 +65,9 @@
       <if test="houseDTO.type!=null">
         and a.type=#{houseDTO.type}
       </if>
+      <if test="houseDTO.houseTypePermission!=null">
+        and a.type=#{houseDTO.houseTypePermission}
+      </if>
       order by ${houseDTO.sortClause} ${houseDTO.sort}
     </select>
 

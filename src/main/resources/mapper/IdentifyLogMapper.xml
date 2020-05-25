@@ -79,6 +79,10 @@
       and a.sell_status=#{identifyDTO.sellStatus}
     </if>
 
+    <if test="identifyDTO.productType!=null">
+      and a.product_type=#{identifyDTO.productType}
+    </if>
+
     order by ${identifyDTO.sortClause} ${identifyDTO.sort}
 
   </select>

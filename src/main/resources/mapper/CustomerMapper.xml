@@ -28,6 +28,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="project_id" property="projectId" jdbcType="BIGINT"/>
+    <result column="product_type" property="productType" jdbcType="INTEGER"/>
   </resultMap>
 
   
@@ -54,6 +55,14 @@
 
     <if test="customerDTO.endComingTime!=null">
       and a.coming_time <![CDATA[ <= ]]> #{customerDTO.endComingTime}
+    </if>
+
+    <if test="customerDTO.houseTypePermission!=null">
+      and a.product_type=#{customerDTO.houseTypePermission}
+    </if>
+
+    <if test="customerDTO.productType!=null">
+      and a.product_type=#{customerDTO.productType}
     </if>
       and not exists (select * from identify_log t where t.mobile=a.mobile and sell_status!=3)
       and not exists (select * from offer_buy p where p.mobile=a.mobile)

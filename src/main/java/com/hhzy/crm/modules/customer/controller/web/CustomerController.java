@@ -32,6 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,9 +61,19 @@ public class CustomerController extends BaseController {
     public CommonResult list(@RequestBody CustomerDTO customerDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(customerDTO.getSortClause());
         customerDTO.setSortClause(sortClause);
-        PageInfo<Customer> customerPageInfo = customerService.selectAllCustomer(customerDTO);
         SysUser user = getUser();
         Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        if (userPermissions.contains(CrmConstant.Permissions.SHOP)&&!userPermissions.contains(CrmConstant.Permissions.RESIDENCE)){
+            customerDTO.setHouseTypePermission(2);
+        }else if (userPermissions.contains(CrmConstant.Permissions.RESIDENCE)
+                &&!userPermissions.contains(CrmConstant.Permissions.SHOP)){
+            customerDTO.setHouseTypePermission(1);
+        }else if (!userPermissions.contains(CrmConstant.Permissions.RESIDENCE)
+                &&!userPermissions.contains(CrmConstant.Permissions.SHOP)){
+            return CommonResult.success(new PageInfo<Customer>());
+        }
+
+        PageInfo<Customer> customerPageInfo = customerService.selectAllCustomer(customerDTO);
         if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
             customerPageInfo.getList().forEach(e->e.setMobile(null));
         }
@@ -117,13 +129,13 @@ public class CustomerController extends BaseController {
     @DataLog(value = "来访客户导出",actionType =CrmConstant.ActionType.EXPORT)
     public void export(CustomerDTO customerDTO,ModelMap modelMap){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(customerDTO.getSortClause());
+        SysUser user = getUser();
+        Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
         customerDTO.setSortClause(sortClause);
         customerDTO.setPage(null);
         customerDTO.setPageSize(null);
         PageInfo<Customer> customerPageInfo = customerService.selectAllCustomer(customerDTO);
         List<Customer> list = customerPageInfo.getList();
-        SysUser user = getUser();
-        Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
         for (Customer customer : list) {
             SourceWayEnum sourceWayEnum = EnumUtil.getByCode(customer.getSourceWay(), SourceWayEnum.class);
             customer.setSourceWayStr(sourceWayEnum==null?null:sourceWayEnum.getMessage());
@@ -135,18 +147,42 @@ public class CustomerController extends BaseController {
             }else {
                 customer.setSexStr("女");
             }
+            if (Integer.valueOf(1).equals(customer.getProductType())){
+                customer.setProductTypeStr("住宅");
+            }else if (Integer.valueOf(2).equals(customer.getProductType())){
+                customer.setProductTypeStr("商铺");
+            }
         }
         Map<String, Object> map = new HashMap<String, Object>();
         TemplateExportParams params = new TemplateExportParams(
                 "excel-template/customer.xlsx");
         map.put("list",list);
         String yyyyMMdd = new DateTime().toString("yyyyMMdd");
-        modelMap.put(TemplateExcelConstants.FILE_NAME, "来访客户登记表"+yyyyMMdd);
+        String fileName="";
+        if (customerDTO.getProductType()!=null){
+            if (Integer.valueOf(1).equals(customerDTO.getProductType())){
+                fileName= "住宅"+"来访客户登记表"+yyyyMMdd;
+            }else if (Integer.valueOf(2).equals(customerDTO.getProductType())){
+                fileName="商铺"+"来访客户登记表"+yyyyMMdd;
+            }
+        }else {
+            fileName="来访客户登记表"+yyyyMMdd;
+        }
+        try {
+            modelMap.put(TemplateExcelConstants.FILE_NAME, URLEncoder.encode(fileName,"UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            modelMap.put(TemplateExcelConstants.FILE_NAME,fileName);
+        }
         modelMap.put(TemplateExcelConstants.PARAMS, params);
         modelMap.put(TemplateExcelConstants.MAP_DATA, map);
         PoiBaseView.render(modelMap, request, response,
                 TemplateExcelConstants.EASYPOI_TEMPLATE_EXCEL_VIEW);
 
+    }
+
+    public static void main(String[] args) throws UnsupportedEncodingException {
+        String filename="来访客户登记表";
+        System.out.println(new String(filename.getBytes("UTF-8")));
     }
 
     @PostMapping("/delete")

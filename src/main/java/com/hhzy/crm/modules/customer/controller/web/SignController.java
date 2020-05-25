@@ -16,7 +16,6 @@ import com.hhzy.crm.modules.customer.dataobject.dto.ClearDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.SignDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.SignInfoDTO;
 import com.hhzy.crm.modules.customer.dataobject.vo.SignVo;
-import com.hhzy.crm.modules.customer.entity.OfferBuy;
 import com.hhzy.crm.modules.customer.entity.Project;
 import com.hhzy.crm.modules.customer.entity.SignInfo;
 import com.hhzy.crm.modules.customer.service.ProjectService;
@@ -33,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -147,7 +148,7 @@ public class SignController extends BaseController {
     @ApiOperation("/导出商铺订购信息表")
     @RequiresPermissions("export")
     @DataLog(value = "商铺订购信息表导出",actionType =CrmConstant.ActionType.EXPORT)
-    public void exportshangpu(SignDTO signDTO,ModelMap modelMap){
+    public void exportshangpu(SignDTO signDTO,ModelMap modelMap) throws UnsupportedEncodingException {
         signDTO.setHouseType(2);
         //String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());
         //signDTO.setSortClause(sortClause);
@@ -167,7 +168,7 @@ public class SignController extends BaseController {
         TemplateExportParams params = new TemplateExportParams(
                 "excel-template/sign2.xlsx");
         String yyyyMMdd = new DateTime().toString("yyyyMMdd");
-        modelMap.put(TemplateExcelConstants.FILE_NAME, "商铺订购信息"+yyyyMMdd);
+        modelMap.put(TemplateExcelConstants.FILE_NAME,URLEncoder.encode("商铺订购信息"+yyyyMMdd,"UTF-8") );
         modelMap.put(TemplateExcelConstants.PARAMS, params);
         modelMap.put(TemplateExcelConstants.MAP_DATA, map);
         PoiBaseView.render(modelMap, request, response,
@@ -180,7 +181,7 @@ public class SignController extends BaseController {
     @ApiOperation("/导出住宅订购信息表")
     @RequiresPermissions("export")
     @DataLog(value = "住宅订购信息表导出",actionType =CrmConstant.ActionType.EXPORT)
-    public void exportzhuzhai(SignDTO signDTO,ModelMap modelMap){
+    public void exportzhuzhai(SignDTO signDTO,ModelMap modelMap) throws UnsupportedEncodingException {
         signDTO.setHouseType(1);
         //String sortClause = StringHandleUtils.camel2UnderMultipleline(signDTO.getSortClause());
         //signDTO.setSortClause(sortClause);
@@ -200,7 +201,7 @@ public class SignController extends BaseController {
         TemplateExportParams params = new TemplateExportParams(
                 "excel-template/sign1.xlsx");
         String yyyyMMdd = new DateTime().toString("yyyyMMdd");
-        modelMap.put(TemplateExcelConstants.FILE_NAME,"住宅订购信息"+yyyyMMdd);
+        modelMap.put(TemplateExcelConstants.FILE_NAME,URLEncoder.encode("住宅订购信息"+yyyyMMdd,"UTF-8"));
         modelMap.put(TemplateExcelConstants.PARAMS, params);
         modelMap.put(TemplateExcelConstants.MAP_DATA, map);
         PoiBaseView.render(modelMap, request, response,

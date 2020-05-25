@@ -57,4 +57,6 @@ public class HouseDTO extends BaseEntity {
      @ApiModelProperty("排序方式 asc ： 正序， desc ： 倒序")
     private String sort = "desc";
 
+     private Integer houseTypePermission;
+
 }

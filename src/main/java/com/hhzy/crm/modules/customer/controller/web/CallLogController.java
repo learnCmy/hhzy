@@ -22,10 +22,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +108,7 @@ public class CallLogController  extends BaseController {
     @ApiOperation("/导出来电")
     @RequiresPermissions("export")
     @DataLog(value = "(网页)来电登记导出",actionType =CrmConstant.ActionType.EXPORT)
-    public void export(CallLogDTO callLogDTO,ModelMap modelMap){
+    public void export(CallLogDTO callLogDTO,ModelMap modelMap) throws UnsupportedEncodingException {
         String sortClause = StringHandleUtils.camel2UnderMultipleline(callLogDTO.getSortClause());
         callLogDTO.setSortClause(sortClause);
         callLogDTO.setPage(null);
@@ -124,7 +127,7 @@ public class CallLogController  extends BaseController {
                 "excel-template/call.xlsx");
         map.put("list",callLogPageInfo.getList());
 
-        modelMap.put(TemplateExcelConstants.FILE_NAME, "来电登记表");
+        modelMap.put(TemplateExcelConstants.FILE_NAME, URLEncoder.encode("来电登记表"+new DateTime().toString("yyyyMMdd"),"UTF-8"));
         modelMap.put(TemplateExcelConstants.PARAMS, params);
         modelMap.put(TemplateExcelConstants.MAP_DATA, map);
         PoiBaseView.render(modelMap, request, response,
