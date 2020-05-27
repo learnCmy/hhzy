@@ -48,6 +48,9 @@ public class ShowServiceImpl implements ShowService {
     @Autowired
     private IdentifyLogMapper identifyLogMapper;
 
+    @Autowired
+    private ReportMapper reportMapper;
+
     @Override
     public Map<String,Object> count(ShowDTO showDTO){
         //定义返回对象
@@ -126,7 +129,13 @@ public class ShowServiceImpl implements ShowService {
         int identifyCount = identifyLogMapper.selectCountByExample(identifyExample);
         map.put("identify",identifyCount);
 
-
+        Example reportExample = new Example(Report.class);
+        Example.Criteria reportCriteria = reportExample.createCriteria().andEqualTo("projectId", projectId);
+        if (beginDate!=null&&endDate!=null){
+            reportCriteria.andBetween("createTime",beginDate,endDate);
+        }
+        int reportCount = reportMapper.selectCountByExample(tookeenExample);
+        map.put("report",reportCount);
         return map;
     }
 
@@ -238,6 +247,7 @@ public class ShowServiceImpl implements ShowService {
         List<LineChartData> offerDataChartList=Lists.newArrayList();
         List<LineChartData>  tookeenDataChartList=Lists.newArrayList();
         List<LineChartData> identifyDataChartList=Lists.newArrayList();
+        List<LineChartData> reportDataChartList=Lists.newArrayList();
         //统计来访
         for (int i = 7; i >=0 ; i--) {
             DateTime dateTime = new DateTime();
@@ -328,6 +338,20 @@ public class ShowServiceImpl implements ShowService {
             identifyLogDataChart.setY(identifyCount);
             identifyDataChartList.add(identifyLogDataChart);
 
+
+            //统计拓展
+            Example reportExample = new Example(Report.class);
+            Example.Criteria reportCriteria = reportExample.createCriteria().andEqualTo("projectId", projectId);
+            if (beginDate!=null&&endDate!=null){
+                reportCriteria.andBetween("createTime",beginDate,endDate);
+            }
+            int reportCount = reportMapper.selectCountByExample(tookeenExample);
+            LineChartData reportDataChart = new LineChartData();
+            reportDataChart.setX(DateUtils.format(date));
+            reportDataChart.setY(reportCount);
+            reportDataChartList.add(reportDataChart);
+
+
         }
         map.put("customerDataChartList",customerDataChartList);
         map.put("callDataChartList",callDataChartList);
@@ -336,6 +360,7 @@ public class ShowServiceImpl implements ShowService {
         map.put("offerDataChartList",offerDataChartList);
         map.put("tookeenDataChartList",tookeenDataChartList);
         map.put("identifyDataChartList",identifyDataChartList);
+        map.put("reportDataChartList",reportDataChartList);
         return map;
     }
 
