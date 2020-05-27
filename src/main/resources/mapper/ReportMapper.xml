@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hhzy.crm.modules.customer.dao.ReportMapper">
+
+  <select id="selectList" resultType="com.hhzy.crm.modules.customer.entity.Report">
+    select a.*,b.username from report a left join sys_user b on a.user_id=b.user_id        where  1=1
+      <if test="projectId!=null">
+        and a.project_id=#{projectId}
+      </if>
+      <if test="keyWord!=null and keyWord!=''">
+        and ( a.name like CONCAT('%', #{keyWord}, '%')
+        or  a.mobile like CONCAT('%', #{keyWord}, '%')
+        )
+      </if>
+    <if test="userId!=null">
+      and a.user_id = #{userId}
+    </if>
+    <if test="productType!=null">
+      and a.product_type=#{productType}
+    </if>
+
+    <if test="sourceWay!=null">
+      and a.source_way=#{sourceWay}
+    </if>
+    order by ${sortClause} ${sort}
+  </select>
+
+
+  <select id="removeUserId" resultType="integer">
+    UPDATE report SET user_id=null WHERE
+    id in
+    <foreach collection="ids" index="index" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+  </select>
+  
+</mapper>
