@@ -61,6 +61,9 @@ public class ReportController extends BaseController {
         reportDTO.setSortClause(sortClause);
         SysUser user = getUser();
         Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        if(userPermissions.contains(CrmConstant.Permissions.MYCUSTOMER)){
+            reportDTO.setUserId(user.getUserId());
+        }
         PageInfo<Report> reportPageInfo = reportService.selectList(reportDTO);
         if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
             reportPageInfo.getList().forEach(e->e.setMobile(null));
@@ -68,6 +71,14 @@ public class ReportController extends BaseController {
         return CommonResult.success(reportPageInfo);
     }
 
+    @PostMapping("/save")
+    @ApiOperation("录入客户报备")
+    public CommonResult saveReport(@RequestBody Report report){
+        Long userId = getUserId();
+        report.setUserId(userId);
+        reportService.saveBasicReport(report);
+        return CommonResult.success();
+    }
 
     @PostMapping("/update/user")
     @ApiOperation("修改置业顾问")

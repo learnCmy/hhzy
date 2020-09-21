@@ -70,7 +70,8 @@ public class ShowController {
 
     @PostMapping("/line/chart")
     @ApiOperation("统计一星期的折线图'")
-    public CommonResult line(Long projectId){
+    public CommonResult line(@RequestBody ShowDTO showDTO){
+        Long projectId = showDTO.getProjectId();
         Map<String, Object> map = showService.lineChart(projectId);
         return CommonResult.success(map);
     }

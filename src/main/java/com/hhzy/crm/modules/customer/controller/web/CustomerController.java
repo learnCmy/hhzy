@@ -13,6 +13,7 @@ import com.hhzy.crm.common.enums.SourceWayEnum;
 import com.hhzy.crm.common.response.CommonResult;
 import com.hhzy.crm.common.utils.EnumUtil;
 import com.hhzy.crm.common.utils.StringHandleUtils;
+import com.hhzy.crm.common.utils.ValidatorUtils;
 import com.hhzy.crm.modules.customer.dataobject.dto.CustomerDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.UserBatchDTO;
 import com.hhzy.crm.modules.customer.dataobject.importPOI.CustomerImport;
@@ -72,12 +73,25 @@ public class CustomerController extends BaseController {
                 &&!userPermissions.contains(CrmConstant.Permissions.SHOP)){
             return CommonResult.success(new PageInfo<Customer>());
         }
-
+        if(userPermissions.contains(CrmConstant.Permissions.MYCUSTOMER)){
+            customerDTO.setUserId(user.getUserId());
+        }
         PageInfo<Customer> customerPageInfo = customerService.selectAllCustomer(customerDTO);
         if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
             customerPageInfo.getList().forEach(e->e.setMobile(null));
         }
         return  CommonResult.success(customerPageInfo);
+    }
+
+
+    @PostMapping("/save")
+    @ApiOperation("录入客户")
+    public CommonResult saveCustomer(@RequestBody Customer customer){
+        ValidatorUtils.validateEntity(customer);
+        Long userId = getUserId();
+        customer.setUserId(userId);
+        customerService.saveBasicCustomer(customer);
+        return CommonResult.success();
     }
 
 

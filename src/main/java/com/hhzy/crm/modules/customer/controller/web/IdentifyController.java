@@ -14,6 +14,7 @@ import com.hhzy.crm.common.enums.SourceWayEnum;
 import com.hhzy.crm.common.exception.BusinessException;
 import com.hhzy.crm.common.response.CommonResult;
 import com.hhzy.crm.common.utils.EnumUtil;
+import com.hhzy.crm.common.utils.MobileUtils;
 import com.hhzy.crm.common.utils.StringHandleUtils;
 import com.hhzy.crm.modules.customer.dataobject.dto.IdentifyDTO;
 import com.hhzy.crm.modules.customer.dataobject.dto.RefundDateDTO;
@@ -66,9 +67,12 @@ public class IdentifyController extends BaseController {
     public CommonResult list(@RequestBody IdentifyDTO identifyDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(identifyDTO.getSortClause());
         identifyDTO.setSortClause(sortClause);
-        PageInfo<IdentifyLog> identifyLogPageInfo = identifyService.selectList(identifyDTO);
         SysUser user = getUser();
         Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        if(userPermissions.contains(CrmConstant.Permissions.MYCUSTOMER)){
+            identifyDTO.setUserId(user.getUserId());
+        }
+        PageInfo<IdentifyLog> identifyLogPageInfo = identifyService.selectList(identifyDTO);
         if (userPermissions.contains(CrmConstant.Permissions.SHOP)&&!userPermissions.contains(CrmConstant.Permissions.RESIDENCE)){
             identifyDTO.setProductType(2);
         }else if (userPermissions.contains(CrmConstant.Permissions.RESIDENCE)
@@ -84,6 +88,21 @@ public class IdentifyController extends BaseController {
         return CommonResult.success(identifyLogPageInfo);
     }
 
+
+    @PostMapping("/save")
+    @ApiOperation("保存认筹记录")
+    public CommonResult save(@RequestBody IdentifyLog identifyLog){
+        if (identifyLog.getProjectId()==null){
+            throw  new BusinessException("项目Id不能为空");
+        }
+        Long userId = getUserId();
+        String mobile = MobileUtils.getMobile(identifyLog.getMobile());
+        identifyLog.setMobile(mobile);
+        identifyLog.setUserId(userId);
+        identifyLog.setSellStatus(IdentifySellStatusEnum.BUYCARD.getCode());
+        identifyService.save(identifyLog);
+        return CommonResult.success();
+    }
 
     @GetMapping("/count/status")
     @ApiOperation("统计不同状态下的认筹总数")

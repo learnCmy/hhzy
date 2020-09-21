@@ -59,13 +59,28 @@ public class FollowLogController extends BaseController {
     public CommonResult list(@RequestBody FollowLogDTO followLogDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(followLogDTO.getSortClause());
         followLogDTO.setSortClause(sortClause);
-        PageInfo<FollowLog> select = followLogService.select(followLogDTO);
         SysUser user = getUser();
         Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        if(userPermissions.contains(CrmConstant.Permissions.MYCUSTOMER)){
+            followLogDTO.setUserId(user.getUserId());
+        }
+        PageInfo<FollowLog> select = followLogService.select(followLogDTO);
         if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
             select.getList().forEach(e->e.setMobile(null));
         }
         return CommonResult.success(select);
+    }
+
+    @PostMapping("/save")
+    @ApiOperation("保存跟进记录")
+    public CommonResult save(@RequestBody FollowLog followLog){
+        if (followLog.getProjectId()==null){
+            throw  new BusinessException("项目id不能为空");
+        }
+        Long userId = getUserId();
+        followLog.setUserId(userId);
+        followLogService.save(followLog);
+        return CommonResult.success();
     }
 
 

@@ -15,6 +15,8 @@ import com.hhzy.crm.modules.customer.entity.Project;
 import com.hhzy.crm.modules.customer.entity.Tookeen;
 import com.hhzy.crm.modules.customer.service.ProjectService;
 import com.hhzy.crm.modules.customer.service.TookeenService;
+import com.hhzy.crm.modules.sys.entity.SysUser;
+import com.hhzy.crm.modules.sys.service.ShiroService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -28,6 +30,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Auther: cmy
@@ -45,16 +48,32 @@ public class TookeenController extends BaseController {
     @Autowired
     private ProjectService projectService;
 
+    @Autowired
+    private ShiroService shiroService;
+
     @PostMapping("list")
     @ApiOperation("拓展客户列表")
     @RequiresPermissions("tookeenselect")
     public CommonResult list(@RequestBody TookeenDTO tookeenDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(tookeenDTO.getSortClause());
         tookeenDTO.setSortClause(sortClause);
+        SysUser user = getUser();
+        Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        if(userPermissions.contains(CrmConstant.Permissions.MYCUSTOMER)){
+            tookeenDTO.setUserId(user.getUserId());
+        }
         PageInfo<Tookeen> tookeenPageInfo = tookeenService.selectList(tookeenDTO);
         return CommonResult.success(tookeenPageInfo);
     }
 
+    @PostMapping("/save")
+    @ApiOperation("录入客户")
+    public CommonResult saveTookeen(@RequestBody Tookeen tookeen){
+        Long userId = getUserId();
+        tookeen.setUserId(userId);
+        tookeenService.saveBasicTookeen(tookeen);
+        return CommonResult.success();
+    }
 
 
     @PostMapping("/update/user")

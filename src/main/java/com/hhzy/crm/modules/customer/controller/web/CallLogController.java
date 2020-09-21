@@ -57,15 +57,30 @@ public class CallLogController  extends BaseController {
     public CommonResult list(@RequestBody CallLogDTO callLogDTO){
         String sortClause = StringHandleUtils.camel2UnderMultipleline(callLogDTO.getSortClause());
         callLogDTO.setSortClause(sortClause);
-        PageInfo<CallLog> callLogPageInfo = callLogService.selectList(callLogDTO);
         SysUser user = getUser();
         Set<String> userPermissions = shiroService.getUserPermissions(user.getUserId());
+        if(userPermissions.contains(CrmConstant.Permissions.MYCUSTOMER)){
+            callLogDTO.setUserId(user.getUserId());
+        }
+        PageInfo<CallLog> callLogPageInfo = callLogService.selectList(callLogDTO);
         if (userPermissions.contains(CrmConstant.Permissions.SENSITIVE)){
             callLogPageInfo.getList().forEach(e->e.setMobile(null));
         }
         return CommonResult.success(callLogPageInfo);
     }
 
+
+    @PostMapping("/save")
+    @ApiOperation("保存来电登记")
+    public CommonResult addCall(@RequestBody CallLog callLog){
+        if (callLog.getProjectId()==null){
+            throw  new BusinessException("房源项目Id不存在");
+        }
+        Long userId = getUserId();
+        callLog.setUserId(userId);
+        callLogService.saveCallLog(callLog);
+        return CommonResult.success();
+    }
 
     @GetMapping("/update/user")
     @ApiOperation("修改置业顾问")

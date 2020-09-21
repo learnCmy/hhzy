@@ -10,7 +10,7 @@ public class CrmConstant {
     public static final int SUPER_ADMIN = 1;
 
 
-    public static final String phoneRegex= "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
+    public static final String phoneRegex= "^((13[0-9])|(16[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
 
     public static  final  String numberRegex="^[-+]?(([0-9]+)([.]([0-9]+))?|([.]([0-9]+))?)$";
 
@@ -26,6 +26,8 @@ public class CrmConstant {
         public static final String UPDATEUSER="updateuser";
 
         public static  final  String LOOKOTHER="lookother";
+
+        public static final String MYCUSTOMER="mycustomer";
     }
 
     public static class ActionType{
